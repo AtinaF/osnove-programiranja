@@ -226,21 +226,97 @@ import random
 #
 # print(result_with_no_duplicates)
 
-#11
+# 11 Ask the user for a number and determine whether the number is prime or not.
+# You can (and should!) use your answer to Exercise 4 to help you. Take this opportunity to practice using functions, described below.
+#
+# def is_prime(number):
+#     result = []
+#     for i in range(number):
+#         if number % (i + 1) == 0:
+#             result.append(i+1)
+#     print(result)
+#     if len(result)==2:
+#         return True
+#     else:
+#         return False
+#
+# user_input = eval(input("Enter a number: "))
+# if is_prime(user_input):
+#     print("This number is prime.")
+# else:
+#     print("This number is not a prime.")
 
+# #12 Write a program that takes a list of numbers
+# # (for example, a = [5, 10, 15, 20, 25]) and makes a
+# # new list of only the first and last elements of the given list.
+# # For practice, write this code inside a function.
+#
+# def get_first_and_last_element(list):
+#     if list != None:
+#         return [list[0], list[len(list)-1]]
+#         # return [list[0], list[-1]]   #drugi nacin
+#     else:
+#         return -1
+#
+# a = [5, 10, 15, 20, 25]
+# b = get_first_and_last_element(a)
+# print(b)
 
+# #13 Write a program that asks the user how many Fibonnaci numbers to generate and then generates them.
+# # Take this opportunity to think about how you can use functions.
+# # Make sure to ask the user to enter the number of numbers in the sequence to generate.
+# # (Hint: The Fibonnaci seqence is a sequence of numbers where the next number in the sequence
+# # is the sum of the previous two numbers in the sequence. The sequence looks like this: 1, 1, 2, 3, 5, 8, 13, …)
+#
+# number_of_fibonnaci_elements = eval(input("Enter how many Fibonnaci numbers you'd like to get: "))
+# def get_fibonnaci_numbers(how_many):
+#     if how_many <= 1:
+#         return [1]
+#     elif how_many == 2:
+#         return [1, 1]
+#     else:
+#         result = [1, 1]
+#         for i in range(1, how_many-1):
+#             result.append(result[i-1]+result[i])
+#     return result
+#
+# print(get_fibonnaci_numbers(number_of_fibonnaci_elements))
 
+# # 14 Write a program (function!) that takes a list and returns a new list that contains
+# # all the elements of the first list minus all the duplicates.
+# # Extras:
+# # Write two different functions to do this - one using a loop and constructing a list, and another using sets.
+# # Go back and do Exercise 5 using sets, and write the solution for that in a different function.
+#
+# list1 = []
+# for i in range(15):
+#     list1.append(random.randint(1, 30))
+#
+#
+# def remove_duplicates(some_list):
+#     result = []
+#     for i in range(len(some_list)):
+#         if not result.__contains__(some_list[i]):
+#             result.append(some_list[i])
+#     return result
+#
+# print(list1)
+# list2 = remove_duplicates(list1)
+# print(list2)
+#
+# # set is a collection where no element repeats, and there is no "indexing", set[3] means nothibg
+# def remove_duplicates_using_sets(some_list):
+#     return set(some_list)
+#
+# print(remove_duplicates_using_sets(list1))
+#
+# #exercise 5 with sets:
+# a, b = [], []
+# for i in range(15):
+#     a.append(math.floor(random.random()*10))
+#     b.append(math.floor(random.random()*10))
+# print(a, "\n", b)
+# result = list(set(a + b))
+# print(result)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+# 15
