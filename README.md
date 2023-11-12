@@ -1,2 +1,2 @@
 # osnove-programiranja
-pajton
+python
