@@ -12,6 +12,9 @@
 # print(range(2,7))
 # print(range(3, 20, 2))
 import math
+import random
+from array import array
+
 
 # zadatak 2
 from math import sqrt, cos, sin
@@ -192,3 +195,95 @@ ugao_nagiba = eval(input("Unesite nagib merdevina: "))
 duzina_merdevina = visina / math.sin(ugao_nagiba)
 
 print("Potrebna duzina merdevina je: ", duzina_merdevina)
+
+# Zadatak 15. Napiši program koji izračunava zbir prvih n prirodnih brojeva, gde se n unosi sa tastature.
+n = math.floor(eval(input("Koliko prirodnih brojeva zelis da sumiramo: ")))
+zbir = n*(n+1)/2
+print(f"Suma prvih {n} prirodnih brojeva je {zbir}")
+
+#zadatak 16. Napiši program koji izračunava zbir kvadrata prvih n prirodnih brojeva, gde se n unosi sa
+#tastature.
+n = math.floor(eval(input("Za koliko prirodnih brojeva zelis da sumiramo njihove kvadrate: ")))
+zbir = n*(n+1)*(2*n+1)/6
+print(f"Suma kvadrata prvih {n} prirodnih brojeva je {zbir}")
+
+# zadataak 17. Napiši program koji izračunava zbir brojeva koje unosi korisnik. Prvo je potrebno uneti
+# broj brojeva koje treba sabrati. Potom treba uneti sve brojeve i na kraju ispisati vrednost zbira.
+
+brojevi = list()
+broj_unosa = eval(input("Koliko brojeva zelis da uneses: "))
+for i in range(broj_unosa):
+    brojevi.append(eval(input(f"Unesi cifru {i}: ")))
+
+suma = sum(brojevi)
+print(f"Zbir unesenih vrednosti je: {suma}")
+
+# zadatak 18 Napiši program koji izračunava prosek brojeva koje unosi korisnik (slično prethodnom
+# zadatku). Prosek bi trebalo da bude float.
+
+brojevi = list()
+broj_unosa = eval(input("Koliko brojeva zelis da uneses: "))
+for i in range(broj_unosa):
+    brojevi.append(eval(input(f"Unesi cifru {i}: ")))
+
+prosek = sum(brojevi)/brojevi.__len__()
+print(f"Prosek za unesene vrednosti je: {prosek}")
+
+# zadatak 19 Napiši program koji izračunava aproksimaciju broja PI kao delimičnu sumu ovog reda:
+# 4/1 - 4/3 + 4/5 - 4/7 + 4/9  - 4/11 + : : : Program treba da zatraži broj članova ovog niza koje treba
+# sabrati.
+
+broj_unosa = eval(input("Koliko clanova niza uzimas u obzir pri aproksimaciji vrednosti broja PI: "))
+pi = 0
+znak = 1
+for i in range(broj_unosa):
+    pi += znak * 4/(2*i+1)
+    znak *= -1
+print(f"izracunata vrednost pi je {pi}")
+
+# Zadatak 20 Fibonačijev niz brojeva je niz kod koga svaki broj predstavlja zbir prethodna dva. Ovaj
+# niz počinje sa 1, 1, 2, 3, 5, 8, 13, ... Napiši program koji izračunava n-ti Fibonačijev broj gde n unosi
+# korisnik. Fibonačijevi brojevi rastu vrlo brzo, program mora da rukuje vrlo velikim brojevima.
+
+n = eval(input("Koliko Fibonacijevih brojeva zelis da ispises: "))
+
+def get_fibbonaci_sequence(n):
+    trazeni = 0
+    tekuci = 1
+    for i in range(n):
+        prethodni = tekuci
+        tekuci = trazeni + tekuci
+        trazeni = prethodni
+    return  trazeni
+
+print(f"Fibbonaci sequence returned: {get_fibbonaci_sequence(n)}")
+
+# zadatak 21 Paket math sadrži funkciju za izračunavanje kvadratnog korena. Potrebno je napisati
+# sopstvenu funkciju za izračunavanje kvadratnog korena pomoću PiP („probaj-i-ponovo“) pristupa. Prvo
+# pokušamo da pogodimo vrednost korena i uporedimo je sa pravom vrednošću (koju vraća sqrt). Onda
+# napravimo sledeći pokušaj i približimo se rešenju. Postupak ponavljamo dok ne naiđemo na pravu
+# vrednost korena ili njenu dovoljno dobru aproksimaciju. Za ovaj posao možemo koristiti Njutnov metod.
+# Neka je x broj čiji koren tražimo, i guess broj kojim pokušavamo da pogodimo koren. Pokušaj se
+# može popraviti korišćenjem vrednosti guess+2x=guess u sledećem krugu. Napiši program koji implementira
+# Njutnov metod. Program od korisnika traži broj čiji koren tražimo (x) i broj pokušaja. Početna vrednost
+# za pokušaj je x= . Na kraju rada ispisati dobijenu vrednost Njutnovom metodom i vrednost koju vraća
+# sqrt.
+
+def calculate_sqrt(num, attempts):
+    if(num<0):
+        print("Number must be positive")
+        return -1
+
+    offset = 0.5
+    guess = random.randint(1, math.floor(num/2))
+    actual_sqrt = math.sqrt(num)
+    while guess != actual_sqrt and attempts != 0:
+        guess = (guess+num/guess)/2
+        attempts-=1
+        print(guess)
+
+    return guess
+
+num, attempts = eval(input("Enter value to check sqrt of, and number of attempts: "))
+my_sqrt = calculate_sqrt(num, attempts)
+print(my_sqrt)
