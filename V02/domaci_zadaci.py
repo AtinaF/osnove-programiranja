@@ -107,3 +107,4 @@ while not pogodjen:
             brojevi_koji_ne_ulaze_u_dalja_pogadjanja.add(i)
 print("Broj pokusaja: ", broj_pokusaja)
 print(brojevi_koji_ne_ulaze_u_dalja_pogadjanja)
+
