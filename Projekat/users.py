@@ -1,47 +1,24 @@
-# from enum import Enum
-# Role = Enum('Role', {'MANAGER' : 1, 'SELLER' : 2, 'BUYER' : 3})
-# print(role.MANAGER)         #Role.MANAGER
-# print(role.MANAGER.value)   #1
-# print(role.SELLER.value)   #2
-# print(role.BUYER.value)   #3
 from os.path import exists
 import re
-# # Example dictionary
-# user_data = {
-#     'username': 'john_doe',
-#     'role': 2  # Numeric representation for 'SELLER'
-# }
-#
-# # Checking if the 'role' field corresponds to enum values
-# if user_data['role'] in [role.value for role in Role]:
-#     print(f"The role '{user_data['role']}' is a valid numeric representation.")
-# else:
-#     print(f"The role '{user_data['role']}' is not a valid numeric representation.")
 
-min_username_length = 1
-max_username_length = 20
-min_password_length = 7
-max_password_length = 20    # samo za inicijalno formatiranje tabele
-min_name_length = 1
-max_name_length = 15
-min_surname_length = 1
-max_surname_length = 15
 
-#for dynamic table creation
-#todo sacuvaj rad sa dinamickom tabelom u drugom fajlu
-#sirine kolona u tabeli
-# username_column_length = 0
-# password_column_length = 0
-# name_column_length = 0
-# surname_column_length = 0
-role_column_length = 10
+#ogranicenja
+MIN_USERNAME_LENGTH = 1
+MAX_USERNAME_LENGTH = 20
+MIN_PASSWORD_LENGTH = 7
+MAX_PASSWORD_LENGTH = 20
+MIN_NAME_LENGTH = 1
+MAX_NAME_LENGTH = 15
+MIN_SURNAME_LENGTH = 1
+MAX_SURNAME_LENGTH = 15
+ROLE_COLUMN_LENGTH = 5
 
-#ispis u hzaglavlju tabele
-hearder_username = "Korisnicko ime"
-header_password = "Lozinka"
-header_name = "Ime"
-header_surname = "Prezime"
-header_role = "Uloga"
+#ispis u zaglavlju tabele
+HEADER_USERNAME = "Korisnicko ime"
+HEADER_PASSWORD = "Lozinka"
+HEADER_NAME = "Ime"
+HEADER_SURNAME = "Prezime"
+HEADER_ROLE = "Uloga"
 
 
 def usr2str(usr):
@@ -87,70 +64,21 @@ def save_users():
 
     users_file.close()
 
-# #for dynamic table creation (if max field lengths change)
-# def set_table_column_sizes():
-#     # Read lines from the file
-#     check_file()
-#     with open("users.txt", 'r') as file:
-#         for line in file:
-#             username, password, name, surname, role = line.strip().split('|')
-#             # Update maximum lengths
-#             username_column_length = max(username_column_length, len(username), hearder_username)
-#             password_column_length = max(password_column_length, len(password), header_password)
-#             name_column_length = max(name_column_length, len(name), header_name)
-#             surname_column_length = max(surname_column_length, len(surname), header_surname)
-# TODO
-# ZAHTEVA DA CUVAS OVE 4 VREDNOSTI POREFERENCI, I IZMENIS KOD - >SACUVAS IH U LISTU PA IM PRISTUPAS PREKO ODGOVARAJUCEG INDEKSTA U LISTI, UMESTO U samih polja "colume_leng"
-#     return username_column_length, password_column_length, name_column_length, surname_column_length
 
 def format_header():
     #ispis sa kolonom lozinke
-    header = "{0}|{1}|{2}|{3}|{4}\n".format(hearder_username.ljust(max_username_length),
-                                   header_password.ljust(max_password_length),
-                                   header_name.ljust(max_name_length),
-                                   header_surname.ljust(max_surname_length),
-                                   header_role.ljust(role_column_length))
-    lines = "{0}+{1}+{2}+{3}+{4}".format('_'*max_username_length,
-                                         '_'*max_password_length,
-                                         '_'*max_name_length,
-                                         '_'*max_surname_length,
-                                         '_'*role_column_length)
+    header = "{0}|{1}|{2}|{3}|{4}\n".format(HEADER_USERNAME.ljust(MAX_USERNAME_LENGTH),
+                                            HEADER_PASSWORD.ljust(MAX_PASSWORD_LENGTH),
+                                            HEADER_NAME.ljust(MAX_NAME_LENGTH),
+                                            HEADER_SURNAME.ljust(MAX_SURNAME_LENGTH),
+                                            HEADER_ROLE.ljust(ROLE_COLUMN_LENGTH))
+    lines = "{0}+{1}+{2}+{3}+{4}".format('_' * MAX_USERNAME_LENGTH,
+                                         '_' * MAX_PASSWORD_LENGTH,
+                                         '_' * MAX_NAME_LENGTH,
+                                         '_' * MAX_SURNAME_LENGTH,
+                                         '_' * ROLE_COLUMN_LENGTH)
 
-    #ZAHTEVA IZMENU U FORMATIRANJU KORISNIKA
-    # ispis bez kolone lozinke:
-    # header = "{0}|{1}|{2}|{3}\n".format(hearder_username.ljust(max_username_length),
-    #                                     header_name.ljust(max_name_length),
-    #                                     header_surname.ljust(max_surname_length),
-    #                                     header_role.ljust(role_column_length))
-    # lines = "{0}+{1}+{2}+{3}".format('_' * max_username_length,
-    #                                      '_' * max_name_length,
-    #                                      '_' * max_surname_length,
-    #                                      '_' * role_column_length)
-    # # dinamicka tabelasa lozinkom
-    # # (velicine kolona su prilagodjene "nepoznatim" duzinama podataka u tim kolonama)
-    # set_table_column_sizes()
-    # header = "{0}|{1}|{2}|{3}|{4}\n".format(hearder_username.ljust(username_column_length),
-    #                                         header_password.ljust(password_column_length),
-    #                                         header_name.ljust(name_column_length),
-    #                                         header_surname.ljust(surname_column_length),
-    #                                         header_role.ljust(role_column_length))
-    # lines = "{0}+{1}+{2}+{3}+{4}".format('_' * username_column_length,
-    #                                      '_' * password_column_length,
-    #                                      '_' * name_column_length,
-    #                                      '_' * surname_column_length,
-    #                                      '_' * role_column_length)
-    # # dinamicka tabela bez lozinke
-    # set_table_column_sizes()
-    # header = "{0}|{1}|{2}|{3}\n".format(hearder_username.ljust(username_column_length),
-    #                                         header_name.ljust(name_column_length),
-    #                                         header_surname.ljust(surname_column_length),
-    #                                         header_role.ljust(role_column_length))
-    # lines = "{0}+{1}+{2}+{3}".format('_' * username_column_length,
-    #                                      '_' * name_column_length,
-    #                                      '_' * surname_column_length,
-    #                                      '_' * role_column_length)
-
-    return  "{}{}".format(header, lines)
+    return "{}{}".format(header, lines)
 
 
 def format_user(usr):
@@ -158,52 +86,17 @@ def format_user(usr):
             "{{1:{}}}|"
             "{{2:{}}}|"
             "{{3:{}}}|"
-            "{{4:>{}}}").format(max_username_length,
-                                max_password_length,
-                                max_name_length,
-                                max_surname_length,
-                                role_column_length).format(usr["username"],
-                                                            usr["password"],
-                                                            usr["name"],
-                                                            usr["surname"],
-                                                            usr["role"])
-    # #format bez lozinke
-    # return ("{{0:{}}}|"
-    #         "{{1:{}}}|"
-    #         "{{2:{}}}|"
-    #         "{{3:{}}}").format(max_username_length,
-    #                             max_name_length,
-    #                             max_surname_length,
-    #                             role_column_length).format(usr["username"],
-    #                                                        usr["name"],
-    #                                                        usr["surname"],
-    #                                                        usr["role"])
-    # # dinamicki format sa lozinkom
-    # set_table_column_sizes()
-    # return ("{{0:{}}}|"
-    #         "{{1:{}}}|"
-    #         "{{2:{}}}|"
-    #         "{{3:{}}}|"
-    #         "{{4:>{}}}").format(username_column_length,
-    #                             password_column_length,
-    #                             name_column_length,
-    #                             surname_column_length,
-    #                             role_column_length).format(usr["username"],
-    #                                                        usr["password"],
-    #                                                        usr["name"],
-    #                                                        usr["surname"],
-    #                                                        usr["role"])
-    # #dinamicki format bez lozinke
-    # return ("{{0:{}}}|"
-    #         "{{1:{}}}|"
-    #         "{{2:{}}}|"
-    #         "{{3:{}}}").format(username_column_length,
-    #                            name_column_length,
-    #                            surname_column_length,
-    #                            role_column_length).format(usr["username"],
-    #                                                       usr["name"],
-    #                                                       usr["surname"],
-    #                                                       usr["role"])
+            "{{4:>{}}}").format(MAX_USERNAME_LENGTH,
+                                MAX_PASSWORD_LENGTH,
+                                MAX_NAME_LENGTH,
+                                MAX_SURNAME_LENGTH,
+                                ROLE_COLUMN_LENGTH).format(usr["username"],
+                                                           usr["password"],
+                                                           usr["name"],
+                                                           usr["surname"],
+                                                           usr["role"])
+
+
 def format_users(user_list):
     result = ""
     for usr in user_list:
@@ -220,32 +113,49 @@ def contains_number(password):
 
 
 def is_password_valid(password):
-    if len(password) < min_password_length or not contains_number(password):
+    if len(password) < MIN_PASSWORD_LENGTH or not contains_number(password):
         return False
     return True
 
 
-#ogranicenja zbog formatiranja tabele
-#neka korisnicko ime ima [1-10] karaktera
-#neka password bude duzi od 6 i sadrzi broj
-#neka je ime izmedju [1-15] karaktera
-#neka je prezime izmedju [1-15] karaktera
+def has_only_numbers_and_letters(text):
+    pattern = re.compile(r'^[a-zA-Z0-9]+$')
+    return bool(pattern.match(text))
+
+
+def has_only_letters(text):
+    pattern = re.compile(r'^[a-zA-Z]+$')
+    return bool(pattern.match(text))
+
 def is_valid_input(user):
-    if len(user["username"]) < min_username_length or len(user["username"]) > max_username_length:
+    # proveri da li ima neke nedozvoljene karaktere
+    # u nekim delovima sveta je dozvoljeno staviti i specijalni karater u ime.
+    # ova aplikacija se ne razvija za njih.
+    if not has_only_numbers_and_letters(user["username"]) or \
+        not has_only_numbers_and_letters(user["password"]) or \
+        not has_only_letters(user["name"]) or \
+        not has_only_letters(user["surname"]):
+        return -5
+    # proveri da li izlazi iz opsega duzine podatka
+    if len(user["username"]) < MIN_USERNAME_LENGTH or len(user["username"]) > MAX_USERNAME_LENGTH:
         return -1
     elif not is_password_valid(user["password"]):
         return -2
-    elif len(user["name"]) < min_name_length or len(user["name"]) > max_name_length:
+    elif len(user["name"]) < MIN_NAME_LENGTH or len(user["name"]) > MAX_NAME_LENGTH:
         return -3
-    elif len(user["surname"]) < min_surname_length or len(user["surname"]) > max_surname_length:
+    elif len(user["surname"]) < MIN_SURNAME_LENGTH or len(user["surname"]) > MAX_SURNAME_LENGTH:
         return -4
     return 1
 
+
 def add_user(user):
+    if is_valid_input(user):
         for usr in users:
             if usr["username"] == user["username"]:
                 return -1
         users.append(user)
+    else:
+        return -2
 
 
 def login(username, password):
@@ -255,11 +165,23 @@ def login(username, password):
     return False
 
 
+def logout():
+    return "Uspesno ste se izlogovali"
+
+
 def find_user(username, password):
     for usr in users:
         if usr["username"] == username and usr["password"] == password:
             return usr
     return None
+
+
+def update_user_data(user_to_update):
+    usr = find_user(user_to_update["username"], user_to_update["password"])
+    if usr != None:
+        users.remove(usr)
+        users.append(user_to_update)
+        save_users()
 
 
 users = []
@@ -268,3 +190,12 @@ load_users()
 print(format_header())
 print(format_all_users())
 
+
+user_to_update = {
+            "username" : "bsmith",
+            "password" : "pass221",
+            "name" : "jkljkljkl",
+            "surname" : "iopioiop",
+            "role" : "2"
+        }
+update_user_data(user_to_update)

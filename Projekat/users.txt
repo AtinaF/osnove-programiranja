@@ -1,6 +1,5 @@
 mjones|pass453|Michael|Jones|1
 adoliv|pass817|Alice|Olivia|1
-bsmith|pass221|Bob|Smith|2
 csmit|pass543|Charlie|Smith|2
 edavie|pass189|Eva|Davis|2
 ddavie|pass824|David|Davis|3
@@ -8,3 +7,4 @@ omill|pass756|Olivia|Miller|3
 mwill|pass309|Michael|Williams|3
 sjone|pass672|Sophia|Jones|3
 dsmit|pass467|Daniel|Smith|3
+bsmith|pass221|Bob|Smith|2
