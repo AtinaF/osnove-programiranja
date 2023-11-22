@@ -37,7 +37,6 @@ def str2usr(line):
             'role': role
         }
         return user
-# TODO vrati None i u pozivu funkcije proveri sta je vratila, ili pazi gde je pozivas
 
 
 def check_file():
@@ -154,6 +153,7 @@ def add_user(user):
             if usr["username"] == user["username"]:
                 return -1
         users.append(user)
+        save_users()
     else:
         return -2
 
@@ -191,11 +191,11 @@ print(format_header())
 print(format_all_users())
 
 
-user_to_update = {
-            "username" : "bsmith",
-            "password" : "pass221",
-            "name" : "jkljkljkl",
-            "surname" : "iopioiop",
-            "role" : "2"
-        }
-update_user_data(user_to_update)
+# user_to_update = {
+#             "username" : "bsmith",
+#             "password" : "pass221",
+#             "name" : "jkljkljkl",
+#             "surname" : "iopioiop",
+#             "role" : "2"
+#         }
+# update_user_data(user_to_update)

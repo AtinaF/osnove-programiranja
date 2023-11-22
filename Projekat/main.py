@@ -40,9 +40,36 @@ def main():
             logout()
         elif komanda == '4':
             update_user()
+        elif komanda == '5':
+            add_seller()
 
     print("Dovidjenja.")
 
+
+def add_seller():
+    if logged_in_user_data["logged_in_role"] == '1':
+        print("[5]  Dodavanje prodavca")
+        seller = {}
+        seller["username"] = input("Unesite korisnicko ime >>").strip()
+        seller["password"] = input("Unesite lozinku >>").strip()
+        seller["name"] = input("Unesite ime >>").strip()
+        seller["surname"] = input("Unesite prezime >>").strip()
+        seller["role"] = input("Unesite ulogu [1] menadzer, [2] prodavac >>").strip()
+        if seller["role"] != "2" and seller["role"] != "1":
+            print("Neuspesno dodavanje prodavca.\n")
+            print("Uneli ste nepostojecu ulogu.\n")
+        if (is_validated(seller)):
+            is_added = users.add_user(seller)
+            if is_added == -1:
+                print("Neuspesno dodavanje prodavca.\n")
+                print("Korisnik sa tim korisnickim imenom vec postoji u sistemu.\n")
+            elif is_added == -2:
+                print("Neuspesno dodavanje prodavca.\n")
+            else:
+                users.save_users()
+                print("Uspesno dodavanje prodavca: ")
+                print(users.format_header())
+                print(users.format_user(seller))
 
 def is_validated(user):
     is_valid = users.is_valid_input(user)
@@ -141,7 +168,7 @@ def update_user():
 def menu():
     print_menu()
     command = input(">> ")
-    while command.upper() not in ('1', '2', '3', '4', 'X'):
+    while command.upper() not in ('1', '2', '3', '4', '5', 'X'):
         print("\nUneli ste pogresnu komandu.\n")
         print_menu()
         command = input(">> ")
@@ -154,6 +181,7 @@ def print_menu():
     print(" 2 - uloguj se")
     print(" 3 - odjavi se")
     print(" 4 - izmeni licne podatke")
+    print(" 5 - dodaj prodavca")
     # print(" 4 - pregledaj dostupne filmove")
     # print(" 5 - pretrazi filmove po jednom kriterijumu")
     # print(" 6 - pretrazi filmove po vise kriterijuma")
