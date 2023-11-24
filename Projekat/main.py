@@ -48,28 +48,30 @@ def main():
 
 def add_seller():
     if logged_in_user_data["logged_in_role"] == '1':
-        print("[5]  Dodavanje prodavca")
-        seller = {}
-        seller["username"] = input("Unesite korisnicko ime >>").strip()
-        seller["password"] = input("Unesite lozinku >>").strip()
-        seller["name"] = input("Unesite ime >>").strip()
-        seller["surname"] = input("Unesite prezime >>").strip()
-        seller["role"] = input("Unesite ulogu [1] menadzer, [2] prodavac >>").strip()
-        if seller["role"] != "2" and seller["role"] != "1":
-            print("Neuspesno dodavanje prodavca.\n")
+        print("[5]  Dodavanje prodavca ili menadzera")
+        user = {}
+        user["username"] = input("Unesite korisnicko ime >>").strip()
+        user["password"] = input("Unesite lozinku >>").strip()
+        user["name"] = input("Unesite ime >>").strip()
+        user["surname"] = input("Unesite prezime >>").strip()
+        user["role"] = input("Unesite ulogu [1] menadzer, [2] prodavac >>").strip()
+        if not(user["role"] == "2") and not(user["role"] == "1"):
+            print("Neuspesno dodavanje korisnika.\n")
             print("Uneli ste nepostojecu ulogu.\n")
-        if (is_validated(seller)):
-            is_added = users.add_user(seller)
+        if (is_validated(user)):
+            is_added = users.add_user(user)
             if is_added == -1:
-                print("Neuspesno dodavanje prodavca.\n")
+                print("Neuspesno dodavanje korisnika.\n")
                 print("Korisnik sa tim korisnickim imenom vec postoji u sistemu.\n")
             elif is_added == -2:
-                print("Neuspesno dodavanje prodavca.\n")
+                print("Neuspesno dodavanje korisnika.\n")
             else:
-                users.save_users()
-                print("Uspesno dodavanje prodavca: ")
+                #users.save_users()
+                print("Uspesno dodavanje korisnika: ")
                 print(users.format_header())
-                print(users.format_user(seller))
+                print(users.format_user(user))
+    else:
+        print("Samo menadzer ima mogucnost dodavanja novog menadzera ili korisnika u sistem.")
 
 def is_validated(user):
     is_valid = users.is_valid_input(user)
@@ -86,34 +88,36 @@ def is_validated(user):
         print("Prezime mora sadrzati izmedju {} i {} karaktera.\n".format(users.MIN_SURNAME_LENGTH, users.MAX_SURNAME_LENGTH))
         return False
     elif is_valid == -5:
-        print("Ime i prezime smeju sadrzati samo slova. Korisnicko ime i lozinka smeju sadrzati i slova i brojeve.")
+        print("Ime i prezime smeju sadrzati samo slova. Korisnicko ime i lozinka moraju sadrzati bar jedno slovo, a smeju sadrzati i slova i brojeve.")
         return False
     else:
         return True
 
 
 def register():
-    print("[1] Registracija novog korisnika\n")
-    usr = {}
-    usr['username'] = input("Unesite korisnicko ime >> ").strip()
-    usr['password'] = input("Unesite lozinku >> ").strip()
-    usr['name'] = input("Unesite ime >> ").strip()
-    usr['surname'] = input("Unesite prezime >> ").strip()
-    usr['role'] = '3'
-    if(is_validated(usr)):
-        is_added = users.add_user(usr)
-        if is_added == -1:
-            print("Neuspesna registracija.\n")
-            print("Korisnik sa tim korisnickim imenom vec postoji u sistemu.\n")
-        elif is_added == -2:
-            print("Neuspesna registracija.\n")
-            print("xxxxxxxxxxxxxxxxxxxxxxxxxx")
-        else:
-            users.save_users()
-            print("Uspesna registracija korisnika: ")
-            print(users.format_header())
-            print(users.format_user(usr))
-
+    if not is_logged_in():
+        print("[1] Registracija novog korisnika\n")
+        usr = {}
+        usr['username'] = input("Unesite korisnicko ime >> ").strip()
+        usr['password'] = input("Unesite lozinku >> ").strip()
+        usr['name'] = input("Unesite ime >> ").strip()
+        usr['surname'] = input("Unesite prezime >> ").strip()
+        usr['role'] = '3'
+        if(is_validated(usr)):
+            is_added = users.add_user(usr)
+            if is_added == -1:
+                print("Neuspesna registracija.\n")
+                print("Korisnik sa tim korisnickim imenom vec postoji u sistemu.\n")
+            elif is_added == -2:
+                print("Neuspesna registracija.\n")
+                print("xxxxxxxxxxxxxxxxxxxxxxxxxx")
+            else:
+                users.save_users()
+                print("Uspesna registracija korisnika: ")
+                print(users.format_header())
+                print(users.format_user(usr))
+    else:
+        print("Vec ste prijavljeni na sistem. Odjavite se za mogucnost registracije.")
 
 def login():
     print("[2] Prijava na sistem\n")
@@ -158,7 +162,7 @@ def update_user():
             "role" : logged_in_user_data["logged_in_role"]
         }
         if is_validated(user_to_update):
-            users.update_user_data(user_to_update)
+            users.update_user_data(user_to_update, logged_in_user_data["logged_in_user_password"])
             logged_in_user_data["logged_in_user_password"] = password
         else:
             print("Neuspesna izmena podataka.")
@@ -181,7 +185,7 @@ def print_menu():
     print(" 2 - uloguj se")
     print(" 3 - odjavi se")
     print(" 4 - izmeni licne podatke")
-    print(" 5 - dodaj prodavca")
+    print(" 5 - dodaj prodavca ili menadzera")
     # print(" 4 - pregledaj dostupne filmove")
     # print(" 5 - pretrazi filmove po jednom kriterijumu")
     # print(" 6 - pretrazi filmove po vise kriterijuma")

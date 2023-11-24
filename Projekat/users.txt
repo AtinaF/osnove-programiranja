@@ -7,8 +7,4 @@ omill|pass756|Olivia|Miller|3
 mwill|pass309|Michael|Williams|3
 sjone|pass672|Sophia|Jones|3
 dsmit|pass467|Daniel|Smith|3
-bsmith|pass221|Bob|Smith|2
-jkflds|jfsld83427|jfdlskjfl|iueroiwur|2
-kjsdlfjskl|jflksd324|jfdskl|kjfd|2
-jfklds|fkjlds245|jklds|jkldfs|1
-jkldfsj|43j2lk43|klfsdjs|ssdddkdkdk|1
+bsmith|pass221|jkljkljkl|iopioiop|2

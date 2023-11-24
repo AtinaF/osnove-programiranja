@@ -117,14 +117,20 @@ def is_password_valid(password):
     return True
 
 
-def has_only_numbers_and_letters(text):
-    pattern = re.compile(r'^[a-zA-Z0-9]+$')
-    return bool(pattern.match(text))
+def has_at_least_one_letter(text):
+    pattern = re.compile(r'[a-zA-Z]')
+    return bool(pattern.search(text))
 
 
 def has_only_letters(text):
     pattern = re.compile(r'^[a-zA-Z]+$')
     return bool(pattern.match(text))
+
+
+def has_only_numbers_and_letters(text):
+    pattern = re.compile(r'^[a-zA-Z0-9]+$')
+    return bool(pattern.match(text))
+
 
 def is_valid_input(user):
     # proveri da li ima neke nedozvoljene karaktere
@@ -132,6 +138,8 @@ def is_valid_input(user):
     # ova aplikacija se ne razvija za njih.
     if not has_only_numbers_and_letters(user["username"]) or \
         not has_only_numbers_and_letters(user["password"]) or \
+        not has_at_least_one_letter(user["username"]) or \
+        not has_at_least_one_letter(user["password"]) or \
         not has_only_letters(user["name"]) or \
         not has_only_letters(user["surname"]):
         return -5
@@ -176,12 +184,14 @@ def find_user(username, password):
     return None
 
 
-def update_user_data(user_to_update):
-    usr = find_user(user_to_update["username"], user_to_update["password"])
-    if usr != None:
+def update_user_data(user_to_update, old_password):
+    usr = find_user(user_to_update["username"],old_password)
+    if usr is not None:
         users.remove(usr)
         users.append(user_to_update)
         save_users()
+    else:
+        print("Ovde puca")
 
 
 users = []
