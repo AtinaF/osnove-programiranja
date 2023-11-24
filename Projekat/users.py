@@ -134,8 +134,6 @@ def has_only_numbers_and_letters(text):
 
 def is_valid_input(user):
     # proveri da li ima neke nedozvoljene karaktere
-    # u nekim delovima sveta je dozvoljeno staviti i specijalni karater u ime.
-    # ova aplikacija se ne razvija za njih.
     if not has_only_numbers_and_letters(user["username"]) or \
         not has_only_numbers_and_letters(user["password"]) or \
         not has_at_least_one_letter(user["username"]) or \
@@ -184,8 +182,15 @@ def find_user(username, password):
     return None
 
 
-def update_user_data(user_to_update, old_password):
-    usr = find_user(user_to_update["username"],old_password)
+def get_user_by_username(username):
+    for usr in users:
+        if usr["username"] == username:
+            return usr
+    return None
+
+
+def update_user_data(user_to_update):
+    usr = get_user_by_username(user_to_update["username"])
     if usr is not None:
         users.remove(usr)
         users.append(user_to_update)

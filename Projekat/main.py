@@ -58,7 +58,7 @@ def add_seller():
         if not(user["role"] == "2") and not(user["role"] == "1"):
             print("Neuspesno dodavanje korisnika.\n")
             print("Uneli ste nepostojecu ulogu.\n")
-        if (is_validated(user)):
+        elif (is_validated(user)):
             is_added = users.add_user(user)
             if is_added == -1:
                 print("Neuspesno dodavanje korisnika.\n")
@@ -110,7 +110,7 @@ def register():
                 print("Korisnik sa tim korisnickim imenom vec postoji u sistemu.\n")
             elif is_added == -2:
                 print("Neuspesna registracija.\n")
-                print("xxxxxxxxxxxxxxxxxxxxxxxxxx")
+                # print("xxxxxxxxxxxxxxxxxxxxxxxxxx")
             else:
                 users.save_users()
                 print("Uspesna registracija korisnika: ")
@@ -120,16 +120,16 @@ def register():
         print("Vec ste prijavljeni na sistem. Odjavite se za mogucnost registracije.")
 
 def login():
-    print("[2] Prijava na sistem\n")
-    username = input("Korisnicko ime >> ")
-    password = input("Lozinka >> ")
-    is_login_successful = users.login(username, password)
-    if is_login_successful:
-        #sacuvam usrname i pass ulogovanog za kasnije
-        logged_in_user_data['logged_in_username'] = username
-        logged_in_user_data['logged_in_password'] = password
-    return is_login_successful
-
+    if not is_logged_in():
+        print("[2] Prijava na sistem\n")
+        username = input("Korisnicko ime >> ")
+        password = input("Lozinka >> ")
+        is_login_successful = users.login(username, password)
+        if is_login_successful:
+            #sacuvam usrname i pass ulogovanog za kasnije
+            logged_in_user_data['logged_in_username'] = username
+            logged_in_user_data['logged_in_password'] = password
+        return is_login_successful
 
 def logout():
     # ako je ulogovan
@@ -161,8 +161,10 @@ def update_user():
             "surname" : surname,
             "role" : logged_in_user_data["logged_in_role"]
         }
+        #print(user_to_update)
+
         if is_validated(user_to_update):
-            users.update_user_data(user_to_update, logged_in_user_data["logged_in_user_password"])
+            users.update_user_data(user_to_update)
             logged_in_user_data["logged_in_user_password"] = password
         else:
             print("Neuspesna izmena podataka.")
