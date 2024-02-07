@@ -40,13 +40,13 @@ def str2usr(line):
 
 
 def check_file():
-    if not exists('users.txt'):
-        open('users.txt', 'w').close()
+    if not exists('data/users.txt'):
+        open('data/users.txt', 'w').close()
 
 
 def load_users():
     check_file()
-    users_file = open("users.txt", 'r')
+    users_file = open("data/users.txt", 'r')
     for line in users_file.readlines():
         if len(line) > 1:
             usr = str2usr(line)
@@ -55,7 +55,7 @@ def load_users():
 
 
 def save_users():
-    users_file = open("users.txt", 'w')
+    users_file = open("data/users.txt", 'w')
     for user in users:
         line = usr2str(user)
         users_file.write(line)

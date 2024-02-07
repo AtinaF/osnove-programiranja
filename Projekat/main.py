@@ -1,4 +1,5 @@
 import users
+import movie
 
 logged_in_user_data = {
     'logged_in_username': "",
@@ -7,41 +8,129 @@ logged_in_user_data = {
 }
 
 
+def handle_manager_command(command):
+    if command == '1':
+        add_seller()
+    elif command == '2':
+        print("TODO")
+    elif command == '3':
+        print("TODO")
+    elif command == '4':
+        print("TODO")
+    elif command == '5':
+        print("TODO")
+    elif command == '6':
+        logout()
+    elif command == '7':
+        update_user()
+    elif command == '8':
+        list_movies()
+    elif command == '9':
+        search_movies_per_criteria()
+    elif command == '10':
+        search_movies_per_multiple_criteria()
+    elif command == '11':
+        search_screening_terms()
+
+def handle_seller_command(command):
+    if command == '1':
+        print("TODO")
+    elif command == '2':
+        print("TODO")
+    elif command == '3':
+        print("TODO")
+    elif command == '4':
+        print("TODO")
+    elif command == '5':
+        print("TODO")
+    elif command == '6':
+        print("TODO")
+    elif command == '7':
+        print("TODO")
+    elif command == '8':
+        print("TODO")
+    elif command == '9':
+        logout()
+    elif command == '10':
+        update_user()
+    elif command == '11':
+        list_movies()
+    elif command == '12':
+        search_movies_per_criteria()
+    elif command == '13':
+        search_movies_per_multiple_criteria()
+    elif command == '14':
+        search_screening_terms()
+
+def handle_buyer_command(command):
+    if command == '1':
+        print("TODO")
+    elif command == '2':
+        print("TODO")
+    elif command == '3':
+        print("TODO")
+    elif command == '4':
+        logout()
+    elif command == '5':
+        update_user()
+    elif command == '6':
+        list_movies()
+    elif command == '7':
+        search_movies_per_criteria()
+    elif command == '8':
+        search_movies_per_multiple_criteria()
+    elif command == '9':
+        search_screening_terms()
+
+
+def handle_logged_in_user():
+    global logged_in_user_data
+    command = -1
+    if logged_in_user_data['logged_in_role'] == '1':
+        command = manager_menu()
+        handle_manager_command(command)
+    elif logged_in_user_data['logged_in_role'] == '2':
+        command = seller_menu()
+        handle_seller_command(command)
+    elif logged_in_user_data['logged_in_role'] == '3':
+        command = buyer_menu()
+        handle_buyer_command(command)
+    return command
+
 def main():
     global logged_in_user_data
-    print()
-    print("Evidencija rada bioskopa")
-    print("========================")
-    print()
+    print("\nEvidencija rada bioskopa")
+    print("========================\n")
     komanda = '0'
     while komanda != 'X':
-        komanda = menu()
-        if komanda == '1':
-            register()
-        elif komanda == '2':
-            while not login():
-                print("Uneli ste pogresnu kombinaciju korisnickog imena i lozinke.")
-            print("Uspesna prijava.\n")
-            logged_in_user = users.find_user(logged_in_user_data['logged_in_username'], logged_in_user_data['logged_in_password'])
-            if logged_in_user != None:
-                if logged_in_user["role"] == '1':
-                    logged_in_user_data['logged_in_role'] = '1'
-                    # while userinput != 'logout':
-                    print_manager_menu()
-                elif logged_in_user["role"] == '2':
-                    logged_in_user_data['logged_in_role'] = '2'
-                    print_seller_menu()
-                elif logged_in_user["role"] == '3':
-                    logged_in_user_data['logged_in_role'] = '3'
-                    print_buyer_menu()
-            else:
-                print("Korisnik sa datim korisnickim imenom i lozinkom ne postoji")
-        elif komanda == '3':
-            logout()
-        elif komanda == '4':
-            update_user()
-        elif komanda == '5':
-            add_seller()
+        if is_logged_in():
+            komanda = handle_logged_in_user()           
+        else:
+            komanda = menu()
+            if komanda == '1':
+                register()
+            elif komanda == '2':
+                while not login():
+                    print("Uneli ste pogresnu kombinaciju korisnickog imena i lozinke.")
+                print("Uspesna prijava.\n")
+                logged_in_user = users.find_user(logged_in_user_data['logged_in_username'], logged_in_user_data['logged_in_password'])
+                if logged_in_user != None:
+                    if logged_in_user["role"] == '1':
+                        logged_in_user_data['logged_in_role'] = '1'
+                    elif logged_in_user["role"] == '2':
+                        logged_in_user_data['logged_in_role'] = '2'
+                    elif logged_in_user["role"] == '3':
+                        logged_in_user_data['logged_in_role'] = '3'
+                else:
+                    print("Korisnik sa datim korisnickim imenom i lozinkom ne postoji")
+            elif komanda=='3':
+                list_movies()
+            elif komanda=='4':
+                search_movies_per_criteria()
+            elif komanda=='5':
+                search_movies_per_multiple_criteria()
+            elif komanda=='6':
+                search_screening_terms()
 
     print("Dovidjenja.")
 
@@ -72,6 +161,7 @@ def add_seller():
                 print(users.format_user(user))
     else:
         print("Samo menadzer ima mogucnost dodavanja novog menadzera ili korisnika u sistem.")
+
 
 def is_validated(user):
     is_valid = users.is_valid_input(user)
@@ -119,6 +209,7 @@ def register():
     else:
         print("Vec ste prijavljeni na sistem. Odjavite se za mogucnost registracije.")
 
+
 def login():
     if not is_logged_in():
         print("[2] Prijava na sistem\n")
@@ -130,6 +221,7 @@ def login():
             logged_in_user_data['logged_in_username'] = username
             logged_in_user_data['logged_in_password'] = password
         return is_login_successful
+
 
 def logout():
     # ako je ulogovan
@@ -171,13 +263,94 @@ def update_user():
     else:
         print("Morate biti prijavljeni, da bi izmenili podatke.")
 
+
+def list_movies():
+    print(movie.format_header())
+    print(movie.format_all_movies())
+
+
+def list_available_criteria(language):
+    if language == "en":
+        return ["title", "genre", "duration", "director", "main_roles", "country", "year", "description"]
+    else:
+        return ["naziv filma", "zanr", "trajanje", "reziser", "glavne uloge", "zemlja porekla", "godina proizvodnje", "opis"]
+
+
+def get_user_criterion():
+    available_criteria_sr = list_available_criteria("sr")
+    available_criteria_en = list_available_criteria("en")
+
+    print("Dostupni kriterijumi:")
+    for index, criterion in enumerate(available_criteria_sr, start=1):
+        print(f"{index}. {criterion}")
+
+    while True:
+        try:
+            choice = int(input("Izaberi kriterijum (unesi odgovarajuci broj): "))
+            if 1 <= choice <= len(available_criteria_sr):
+                return available_criteria_en[choice - 1]
+            else:
+                print("Pogresan izbor. Unesite ispravan broj.")
+        except ValueError:
+            print("Pogresan izbor. Unesite broj.")
+
+
+def get_user_criteria():
+    pass
+
+def search_movies_per_criteria():
+    criterion = get_user_criterion()
+    search_term = input("Unesite izraz za pretragu>> ")
+    filtered_movies = movie.filter_movies(criterion,search_term)
+    print(movie.format_header())
+    print(movie.format_movies(filtered_movies))
+
+
+def search_movies_per_multiple_criteria():
+    pass
+
+
+def search_screening_terms():
+    pass
+
+
 def menu():
     print_menu()
     command = input(">> ")
-    while command.upper() not in ('1', '2', '3', '4', '5', 'X'):
+    while command.upper() not in ('1', '2', '3', '4', '5', '6', 'X'):
         print("\nUneli ste pogresnu komandu.\n")
         print_menu()
         command = input(">> ")
+    return command.upper()
+
+
+def seller_menu():
+    print_seller_menu()
+    command = input(">> ")
+    while command.upper() not in ('1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', 'X'):
+        print("\nUneli ste pogresnu komandu.\n")
+        print_seller_menu()
+        command = input(">> ")
+    return command.upper()
+
+
+def buyer_menu():
+    print_buyer_menu()
+    command = input(">> ")
+    while command.upper() not in ('1', '2', '3', '4', '5', '6', '7', '8', '9', 'X'):
+        print("\nUneli ste pogresnu komandu.\n")
+        print_buyer_menu()
+        command = input(">> ")
+    return command.upper()
+
+
+def manager_menu():
+    print_manager_menu()
+    command = input(">> ")
+    while command.upper() not in ('1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', 'X'):
+        print("\nUneli ste pogresnu komandu\n")
+        print_manager_menu()
+        command =  input(">> ")
     return command.upper()
 
 
@@ -185,25 +358,60 @@ def print_menu():
     print("\nIzaberite opciju:")
     print(" 1 - registruj se")
     print(" 2 - uloguj se")
-    print(" 3 - odjavi se")
-    print(" 4 - izmeni licne podatke")
-    print(" 5 - dodaj prodavca ili menadzera")
-    # print(" 4 - pregledaj dostupne filmove")
-    # print(" 5 - pretrazi filmove po jednom kriterijumu")
-    # print(" 6 - pretrazi filmove po vise kriterijuma")
-    # print(" 7 - pretrazi termine bioskopskih")
-    print(" x - izlaz iz programa")
+    print(" 3 - pregledaj dostupne filmove")
+    print(" 4 - pretrazi filmove po jednom kriterijumu")
+    print(" 5 - pretrazi filmove po vise kriterijuma")
+    print(" 6 - pretrazi termine bioskopskih projekcija")
+    print(" X - izlaz iz programa")
+
 
 def print_manager_menu():
-    pass
+    print("MENADZER\nIzaberi opciju:")
+    print("1 - Registruj novog prodavca *******")
+    print("2 - Dobavi izvestaj")
+    print("3 - Proveri popust za karticu lojalnosti")
+    print("4 - Prikazi sedista kao matricu")
+    print("5 - izmeni cenu karte")
+    print("6 - izloguj se")
+    print("7 - izmeni licne podatke")
+    print("8 - pregledaj dostupne filmove")
+    print("9 - pretrazi filmove po jednom kriterijumu")
+    print("10 - pretrazi filmove po vise kriterijuma")
+    print("11 - pretrazi termine bioskopskih projekcija")
+    print("X - izlaz iz programa")
 
 
 def print_seller_menu():
-    pass
+    print("PRODAVAC\nIzaberi opciju: ")
+    print("1 - rezervisi kartu")
+    print("2 - pregledaj rezervisane karte")
+    print("3 - ponisti rezervaciju / prodaju")
+    print("4 - pretrazi karte")
+    print("5 - direktna prodaja karata")
+    print("6 - prodaj rezervisanu kartu")
+    print("7 - izmeni kartu")
+    print("8 - ponisti rezervaciju 30 min pre pocetka projekcije")
+    print("9 - izloguj se")
+    print("10 - izmeni licne podatke")
+    print("11 - pregledaj dostupne filmove")
+    print("12 - pretrazi filmove po jednom kriterijumu")
+    print("13 - pretrazi filmove po vise kriterijuma")
+    print("14 - pretrazi termine bioskopskih projekcija")
+    print("X - izlaz iz programa")
 
 
 def print_buyer_menu():
-    pass
+    print("\nIzaberite opciju: ")
+    print("1 - rezervisi kartu")
+    print("2 - pregledaj svoje rezervisane karte")
+    print("3 - ponisti rezervaciju karte")
+    print("4 - izloguj se")
+    print("5 - izmeni licne podatke")
+    print("6 - pregledaj dostupne filmove")
+    print("7 - pretrazi filmove po jednom kriterijumu")
+    print("8 - pretrazi filmove po vise kriterijuma")
+    print("9 - pretrazi termine bioskopskih projekcija")
+    print("X - izlaz iz programa")
 
 
 if __name__ == '__main__':

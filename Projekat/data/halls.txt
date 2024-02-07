@@ -1,0 +1,2 @@
+code|name|num_rows|seat_marking
+codeer|nameerw|10|A

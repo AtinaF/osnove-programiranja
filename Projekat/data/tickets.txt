@@ -1,0 +1,2 @@
+mjones|screening_term|seat|sale_date|reserved
+adoliv|screening_term|seat|sale_date|reserved

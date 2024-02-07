@@ -1,0 +1,2 @@
+1123|hall12|01.01.2023|02.02.2023|ponedeljak,utorak,sreda,nedelja,cetvrtak|movie aaa|424
+1553|hall1fd2|11.11.2023|22.12.2023|ponedeljak,utorak,sreda,nedelja|movie adfaa|23.00
