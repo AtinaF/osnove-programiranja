@@ -1,4 +1,5 @@
 from os.path import exists
+from Projekat import screening
 
 #ogranicenja
 MIN_CODE_LENGTH = 1
@@ -13,7 +14,6 @@ HEADER_DATE = "Datum odrzavanja"
 
 def screening_term2str(screening_term):
     return '|'.join([screening_term['code'], screening_term['date']])
-    # sifra bioskopske porjekcijem | datum odrzavanja
 
 def str2screening_term(line):
     if line[-1] == '\n':
@@ -27,13 +27,13 @@ def str2screening_term(line):
 
 
 def check_file():
-    if not exists('data/screening_term.txt'):
-        open('data/screening_term.txt', 'w').close()
+    if not exists('data/screening_terms.txt'):
+        open('data/screening_terms.txt', 'w').close()
 
 
 def load_screening_terms():
     check_file()
-    screening_terms_file = open("screening_terms.txt", 'r')
+    screening_terms_file = open('data/screening_terms.txt', 'r')
     for line in screening_terms_file.readlines():
         if len(line) > 1:
             screening_term = str2screening_term(line)
@@ -42,7 +42,7 @@ def load_screening_terms():
 
 
 def save_screening_terms():
-    screening_terms_file = open("data/screening_term.txt", 'w')
+    screening_terms_file = open("data/screening_terms.txt", 'w')
     for screening_term in screening_terms:
         line = screening_term2str(screening_term)
         screening_terms_file.write(line)
@@ -77,16 +77,63 @@ def format_all_screening_terms():
     return format_screening_terms(screening_terms)
 
 
-screening_term1 = {
-    'code': "1111AA",
-    'date': "01.02.2023.",
-}
-screening_term2 = {
-    'code': "1211AB",
-    'date': "01.02.2023.",
-}
+def get_screening_terms_by_criteria(criteria, search_term):
+    filtered_terms = []
+    if criteria == 'movie':
+        for screening_term in screening_terms:
+            code = screening_term['code'][:4]
+            screenings = screening.get_screenings_by_movie_title_and_code(search_term, code)
+            if len(screenings) > 0:
+                filtered_terms.append(screening_term)
+    elif criteria == 'code':
+        for screening_term in screening_terms:
+            if screening_term['code'][:4] == search_term:
+                filtered_terms.append(screening_term)
+    elif criteria == 'hall':
+        for screening_term in screening_terms:
+            code = screening_term['code'][:4]
+            screenings = screening.get_screenings_by_hall_name_and_code(search_term, code)
+            if len(screenings) > 0:
+                filtered_terms.append(screening_term)
+    elif criteria == 'date':
+        for screening_term in screening_terms:
+            if search_term == screening_term['date']:
+                filtered_terms.append(screening_term)
+    elif criteria == 'start_time':
+        for screening_term in screening_terms:
+            code = screening_term['code'][:4]
+            screenings = screening.get_screenings_by_start_time_and_code(search_term, code)
+            if len(screenings) > 0:
+                filtered_terms.append(screening_term)
+    elif criteria == 'end_time':
+        for screening_term in screening_terms:
+            code = screening_term['code'][:4]
+            screenings = screening.get_screenings_by_end_time_and_code(search_term, code)
+            if len(screenings) > 0:
+                filtered_terms.append(screening_term)
 
-screening_terms=[screening_term1, screening_term2]
-save_screening_terms()
+    return filtered_terms
+
+
+def generate_screening_terms(terms):
+    for term in terms:
+        if not screening_terms.__contains__(term):
+            screening_terms.append(term)
+    save_screening_terms()
+
+
+
+# screening_term1 = {
+#     'code': "1111AA",
+#     'date': "01.02.2023.",
+# }
+# screening_term2 = {
+#     'code': "1211AB",
+#     'date': "01.02.2023.",
+# }
+#
+# screening_terms=[screening_term1, screening_term2]
+screening_terms = []
+load_screening_terms()
 print(format_header())
 print(format_all_screening_terms())

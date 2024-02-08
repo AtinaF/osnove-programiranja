@@ -1,2 +1,10 @@
-1123|hall12|01.01.2023|02.02.2023|ponedeljak,utorak,sreda,nedelja,cetvrtak|movie aaa|424
-1553|hall1fd2|11.11.2023|22.12.2023|ponedeljak,utorak,sreda,nedelja|movie adfaa|23.00
+1111|A1|19:30|20:00|ponedeljak,utorak,sreda,nedelja,cetvrtak|Title1|424
+2222|A1|15:00|16:00|ponedeljak,utorak,nedelja|Title2|150
+3333|A1|16:40|18:25|sreda,cetvrtak,subota|Title2|120.00
+4444|A2|19:40|20:40|ponedeljak,utorak,sreda,nedelja,cetvrtak|Title3|420
+5555|A2|13:00|14:45|ponedeljak, sreda|Title2|180.00
+6666|A2|16:00|18:45|utorak,sreda|Title2|140.00
+7777|A2|18:50|19:30|cetvrtak,petak|Title4|260.00
+8888|A3|15:30|17:00|ponedeljak,utorak|Title4|300
+9999|A3|19:30|20:50|ponedeljak,utorak,sreda|Title1|424
+1122|A3|15:00|17:00|sreda,nedelja|Title1|200

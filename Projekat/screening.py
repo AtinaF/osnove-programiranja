@@ -1,3 +1,4 @@
+import datetime
 from os.path import exists
 
 
@@ -126,28 +127,113 @@ def format_all_screenings():
     return format_screenings(screenings)
 
 
+def get_screenings_by_start_time_and_code(start_time, code):
+    result = []
+    for screening in screenings:
+        if screening['start_time'] == start_time and screening['code'] == code:
+            result.append(screening)
+    return result
 
 
-screening1 = {
-    'code': "1123",
-    'hall': "hall12",
-    'start_time': "01.01.2023",
-    'end_time': "02.02.2023",
-    'days': ["ponedeljak", "utorak", "sreda", "nedelja"],
-    # days=[ponedeljak, utorak, sreda, cetvrtak, petak, subota, nedelja]
-    'movie': "movie aaa",
-    'price': "424"
-}
-screening2 = {
-    'code': "1553",
-    'hall': "hall1fd2",
-    'start_time': "11.11.2023",
-    'end_time': "22.12.2023",
-    'days': ["ponedeljak", "utorak", "sreda", "nedelja"],
-    # days=[ponedeljak, utorak, sreda, cetvrtak, petak, subota, nedelja]
-    'movie': "movie adfaa",
-    'price': "23.00"
-}
+def get_screenings_by_end_time_and_code(end_time, code):
+    result = []
+    for screening in screenings:
+        if screening['end_time'] == end_time and screening['code'] == code:
+            result.append(screening)
+    return result
+
+
+def get_screenings_by_movie_title_and_code(search_term, code):
+    result = []
+    for screening in screenings:
+        if search_term.upper() in screening['movie'].upper() and screening['code']==code:
+            result.append(screening)
+    return result
+
+def get_screenings_by_hall_name_and_code(hall, code):
+    result = []
+    for screening in screenings:
+        if hall.upper() in screening['hall'].upper() and screening['code']==code:
+            result.append(screening)
+    return result
+
+
+def get_screening_by_code(code):
+    for screening in screenings:
+        if screening['code'] == code:
+            return screening
+
+
+def generate_codes():
+    codes = []
+    for i in range(26):
+        for j in range(26):
+            code = chr(65 + i) + chr(65 + j)
+            codes.append(code)
+    return codes
+
+
+def generate_movie_dates(num_weeks, days_of_week):
+    movie_dates = []
+    current_date = datetime.date.today()  # Get the current date
+
+    # Iterate over the next 'num_weeks' weeks
+    for i in range(num_weeks * 7):
+        # Check if the day is Monday, Tuesday, or Friday
+        if current_date.weekday() in days_of_week:
+            movie_dates.append(current_date)
+
+        # Move to the next day
+        current_date += datetime.timedelta(days=1)
+
+    return movie_dates
+
+
+def get_screening_terms():
+    terms = []
+    codes = generate_codes()
+    number_of_weeks = 2
+    week_days = ['ponedeljak', 'utorak', 'sreda', 'cetvrtak', 'petak', 'subota', 'nedelja']
+
+    for screening in screenings:
+        days = screening['days'].split(',')
+        days_in_week = []
+
+        for day in days:
+            days_in_week.append(week_days.index(day.strip()))
+
+        movie_dates = generate_movie_dates(number_of_weeks, days_in_week)
+
+        for i, movie_date in enumerate(movie_dates):
+            screening_term = {
+                'code': f"{screening['code']}{codes[i]}",
+                'date': movie_date.strftime("%d.%m.%Y")
+            }
+            terms.append(screening_term)
+
+    return terms
+
+
+# screening1 = {
+#     'code': "1123",
+#     'hall': "hall12",
+#     'start_time': "12:00",
+#     'end_time': "15:00",
+#     'days': ["ponedeljak", "utorak", "sreda", "nedelja"],
+#     # days=[ponedeljak, utorak, sreda, cetvrtak, petak, subota, nedelja]
+#     'movie': "movie aaa",
+#     'price': "424"
+# }
+# screening2 = {
+#     'code': "1553",
+#     'hall': "hall1fd2",
+#     'start_time': "17:05",
+#     'end_time': "18:35",
+#     'days': ["ponedeljak", "utorak", "sreda", "nedelja"],
+#     # days=[ponedeljak, utorak, sreda, cetvrtak, petak, subota, nedelja]
+#     'movie': "movie adfaa",
+#     'price': "23.00"
+# }
 
 # screenings = [screening1, screening2]
 # save_screenings()

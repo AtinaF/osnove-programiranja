@@ -32,6 +32,7 @@ HEADER_DESCRIPTION = "Opis"
 def movie2str(movie):
     return "|".join([movie["title"], movie["genre"], movie["duration"],movie["director"], movie["main_roles"], movie["country"], movie["year"], movie["description"]])
 
+
 def str2movie(line):
     title, genre, duration, director, main_roles, country, year, description = line.split('|')
     movie = {
@@ -130,9 +131,8 @@ def format_all_movies():
     return format_movies(movies)
 
 
-def filter_movies(criterion, search_term):
+def filter_movies_by_criterion(criterion, search_term):
     filtered_movies = []
-
     for movie in movies:
         criterion_lower = criterion.lower()
 
@@ -146,6 +146,30 @@ def filter_movies(criterion, search_term):
         else:
             if search_term.lower() in movie.get(criterion_lower, '').lower():
                 filtered_movies.append(movie)
+
+    return filtered_movies
+
+
+def filter_movies_by_criteria(criteria, search_terms):
+    # criteria = ["genra", "director", "duration", "main_roles"]
+    # search_terms = ["genra1", "Mat Smith", "20-40", "role1, role2"]
+    filtered_movies = []
+
+    for movie in movies:
+        number_of_criteria_satisfied = 0
+        for i in range(len(criteria)):
+            if criteria[i].lower() == 'duration':
+                min_duration, max_duration = map(int, search_terms[i].split('-'))
+                movie_duration = int(movie.get(criteria[i].lower(), 0))
+
+                if min_duration <= movie_duration <= max_duration:
+                    number_of_criteria_satisfied += 1
+
+            if search_terms[i].lower() in movie.get(criteria[i].lower(), '').lower():
+                number_of_criteria_satisfied += 1
+
+        if number_of_criteria_satisfied == len(criteria):
+            filtered_movies.append(movie)
 
     return filtered_movies
 

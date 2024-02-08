@@ -9,7 +9,7 @@ MAX_NAME_LENGTH = 20
 MIN_NUM_ROWS_LENGTH = 1
 MAX_NUM_ROWS_LENGTH = 15
 MIN_SEAT_MARKING_LENGTH = 1
-MAX_SEAT_MARKING_LENGTH = 15
+MAX_SEAT_MARKING_LENGTH = 25
 
 #ispis u zaglavlju tabele
 HEADER_CODE = "Sifra sale"
@@ -18,9 +18,9 @@ HEADER_NUM_ROWS = "Broj redova"
 HEADER_SEAT_MARKING = "Oznaka sedista"
 
 
-
 def hall2str(hall):
     return "|".join([hall["code"], hall["name"], hall["num_rows"], hall["seat_marking"]])
+
 
 def str2hall(line):
     code, name, num_rows, seat_marking = line.split('|')
@@ -28,7 +28,7 @@ def str2hall(line):
         "code":code,
         "name":name,
         "num_rows":num_rows,
-        "seat_marking":seat_marking
+        "seat_marking":seat_marking[:-1]
     }
     return hall
 
@@ -87,7 +87,7 @@ def format_hall(hall):
 def format_halls(halls_list):
     result = ""
     for hall in halls_list:
-        result += format_hall(hall) + '\n'
+        result += format_hall(hall) + "\n"
     return result
 
 
@@ -95,33 +95,49 @@ def format_all_halls():
     return format_halls(halls)
 
 
+def format_hall_rows(hall):
+    # hall_name
+    # hall = get_hall_by_name()
+    num_rows = int(hall['num_rows'])
+    seat_marking = hall['seat_marking'].split(',')
+    formatted_rows = []
+
+    for row in range(num_rows):
+        formatted_row = "{}{:3} ".format("Red", row+1)
+        for seat in range(len(seat_marking)):
+            formatted_row = f"{formatted_row} {seat_marking[seat]}"
+
+        formatted_rows.append(formatted_row)
+
+    return formatted_rows
+
+
+def format_rows(rows):
+    formatted_rows = ""
+    for row in rows:
+        formatted_rows = f"{formatted_rows}{row}\n"
+    return formatted_rows
 
 
 
+#
+# hall = {
+#         "code":"code",
+#         "name":"name",
+#         "num_rows":"num_rows",
+#         "seat_marking":"seat_marking"
+#     }
+#
+# hall2 = {
+#         "code":"codeer",
+#         "name":"nameerw",
+#         "num_rows":"num_rowsrew",
+#         "seat_marking":"seat_markingewr"
+#     }
 
-
-
-
-
-
-
-
-
-hall = {
-        "code":"code",
-        "name":"name",
-        "num_rows":"num_rows",
-        "seat_marking":"seat_marking"
-    }
-
-hall2 = {
-        "code":"codeer",
-        "name":"nameerw",
-        "num_rows":"num_rowsrew",
-        "seat_marking":"seat_markingewr"
-    }
-
-halls = [hall, hall2]
-save_halls()
+# halls = [hall, hall2]
+# save_halls()
+halls = []
+load_halls()
 print(format_header())
 print(format_all_halls())

@@ -1,2 +1,3 @@
-code|name|num_rows|seat_marking
-codeer|nameerw|10|A
+A1|hall_name1|10|A,B,C,D,E,F,G,H,I,J
+A2|hall_name2|12|A,B,C,D,E,F,G,H,I,J,K,L
+A3|hall_name3|8|A,B,C,D,E,F,G,H

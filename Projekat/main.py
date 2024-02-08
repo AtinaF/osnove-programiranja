@@ -1,101 +1,12 @@
-import users
-import movie
+import datetime
+
+from Projekat import users, movie, screening_term, screening, hall, screening_term_search_result
 
 logged_in_user_data = {
     'logged_in_username': "",
     'logged_in_password': "",
     'logged_in_role': ""
 }
-
-
-def handle_manager_command(command):
-    if command == '1':
-        add_seller()
-    elif command == '2':
-        print("TODO")
-    elif command == '3':
-        print("TODO")
-    elif command == '4':
-        print("TODO")
-    elif command == '5':
-        print("TODO")
-    elif command == '6':
-        logout()
-    elif command == '7':
-        update_user()
-    elif command == '8':
-        list_movies()
-    elif command == '9':
-        search_movies_per_criteria()
-    elif command == '10':
-        search_movies_per_multiple_criteria()
-    elif command == '11':
-        search_screening_terms()
-
-def handle_seller_command(command):
-    if command == '1':
-        print("TODO")
-    elif command == '2':
-        print("TODO")
-    elif command == '3':
-        print("TODO")
-    elif command == '4':
-        print("TODO")
-    elif command == '5':
-        print("TODO")
-    elif command == '6':
-        print("TODO")
-    elif command == '7':
-        print("TODO")
-    elif command == '8':
-        print("TODO")
-    elif command == '9':
-        logout()
-    elif command == '10':
-        update_user()
-    elif command == '11':
-        list_movies()
-    elif command == '12':
-        search_movies_per_criteria()
-    elif command == '13':
-        search_movies_per_multiple_criteria()
-    elif command == '14':
-        search_screening_terms()
-
-def handle_buyer_command(command):
-    if command == '1':
-        print("TODO")
-    elif command == '2':
-        print("TODO")
-    elif command == '3':
-        print("TODO")
-    elif command == '4':
-        logout()
-    elif command == '5':
-        update_user()
-    elif command == '6':
-        list_movies()
-    elif command == '7':
-        search_movies_per_criteria()
-    elif command == '8':
-        search_movies_per_multiple_criteria()
-    elif command == '9':
-        search_screening_terms()
-
-
-def handle_logged_in_user():
-    global logged_in_user_data
-    command = -1
-    if logged_in_user_data['logged_in_role'] == '1':
-        command = manager_menu()
-        handle_manager_command(command)
-    elif logged_in_user_data['logged_in_role'] == '2':
-        command = seller_menu()
-        handle_seller_command(command)
-    elif logged_in_user_data['logged_in_role'] == '3':
-        command = buyer_menu()
-        handle_buyer_command(command)
-    return command
 
 def main():
     global logged_in_user_data
@@ -126,9 +37,9 @@ def main():
             elif komanda=='3':
                 list_movies()
             elif komanda=='4':
-                search_movies_per_criteria()
+                search_movies_by_one_criterion()
             elif komanda=='5':
-                search_movies_per_multiple_criteria()
+                search_movies_by_multiple_criteria()
             elif komanda=='6':
                 search_screening_terms()
 
@@ -200,7 +111,6 @@ def register():
                 print("Korisnik sa tim korisnickim imenom vec postoji u sistemu.\n")
             elif is_added == -2:
                 print("Neuspesna registracija.\n")
-                # print("xxxxxxxxxxxxxxxxxxxxxxxxxx")
             else:
                 users.save_users()
                 print("Uspesna registracija korisnika: ")
@@ -269,26 +179,30 @@ def list_movies():
     print(movie.format_all_movies())
 
 
-def list_available_criteria(language):
-    if language == "en":
-        return ["title", "genre", "duration", "director", "main_roles", "country", "year", "description"]
-    else:
-        return ["naziv filma", "zanr", "trajanje", "reziser", "glavne uloge", "zemlja porekla", "godina proizvodnje", "opis"]
-
-
 def get_user_criterion():
-    available_criteria_sr = list_available_criteria("sr")
-    available_criteria_en = list_available_criteria("en")
+    available_criteria = {
+        "title": "naziv filma",
+        "genre": "zanr",
+        "duration": "trajanje",
+        "director": "reziser",
+        "main_roles": "glavne uloge",
+        "country": "zemlja porekla",
+        "year": "godina proizvodnje",
+        "description": "opis"
+    }
+
+    # available_criteria_sr = ["naziv filma", "zanr", "trajanje", "reziser", "glavne uloge", "zemlja porekla", "godina proizvodnje", "opis"]
+    # available_criteria_en = ["title", "genre", "duration", "director", "main_roles", "country", "year", "description"]
 
     print("Dostupni kriterijumi:")
-    for index, criterion in enumerate(available_criteria_sr, start=1):
+    for index, criterion in enumerate(available_criteria.values(), start=1):
         print(f"{index}. {criterion}")
 
     while True:
         try:
             choice = int(input("Izaberi kriterijum (unesi odgovarajuci broj): "))
-            if 1 <= choice <= len(available_criteria_sr):
-                return available_criteria_en[choice - 1]
+            if 1 <= choice <= len(available_criteria.values()):
+                return list(available_criteria.keys())[choice - 1]
             else:
                 print("Pogresan izbor. Unesite ispravan broj.")
         except ValueError:
@@ -296,25 +210,136 @@ def get_user_criterion():
 
 
 def get_user_criteria():
-    pass
+    criteria = []
+    command = '0'
+    print("Dodavanje kriterijuma pretrage")
+    while command.upper() != "X":
+        criteria.append(get_user_criterion())
+        command = input("Unesite 'x' - za kraj unosa, ili bilo sta drugo za nastavak>> ")
+    # print(criteria)
+    return list(set(criteria))
 
-def search_movies_per_criteria():
+
+def search_movies_by_one_criterion():
     criterion = get_user_criterion()
-    search_term = input("Unesite izraz za pretragu>> ")
-    filtered_movies = movie.filter_movies(criterion,search_term)
+    search_term = input("Unesite izraz za pretragu >> ")
+    filtered_movies = movie.filter_movies_by_criterion(criterion, search_term)
     print(movie.format_header())
     print(movie.format_movies(filtered_movies))
 
 
-def search_movies_per_multiple_criteria():
-    pass
+def search_movies_by_multiple_criteria():
+    en_sr_criteria = {
+        "title": "naziv filma",
+        "genre": "zanr",
+        "duration": "trajanje",
+        "director": "reziser",
+        "main_roles": "glavne uloge",
+        "country": "zemlja porekla",
+        "year": "godina proizvodnje",
+        "description": "opis"
+    }
+    criteria = get_user_criteria()
+    search_terms = []
+
+    for criterion in criteria:
+        search_terms.append(input(f"Unesite izraz za pretragu po kriterijumu {en_sr_criteria[criterion]} >> "))
+    filtered_movies = movie.filter_movies_by_criteria(criteria, search_terms)
+
+    print(movie.format_header())
+    print(movie.format_movies(filtered_movies))
+
+
+def get_search_results(screening_terms):
+    results = []
+
+    for term in screening_terms:
+        search_result = {}
+        search_result['code'] = term['code']
+        search_result['date'] = term['date']
+
+        screening_code = term['code'][:4]
+        scr = screening.get_screening_by_code(screening_code)
+
+        search_result['movie'] = scr['movie']
+        search_result['hall'] = scr['hall']
+        search_result['start_time'] = scr['start_time']
+        search_result['end_time'] = scr['end_time']
+
+        results.append(search_result)
+
+    return results
+
+
+def get_search_option(num_options):
+    while True:
+        try:
+            command = int(input("Izaberite neku od ponudjenih opcija >> "))
+            if 1 <= int(command) <= num_options:
+                return command
+            else:
+                print("Pogresan izbor. Unesite ispravan broj.")
+        except ValueError:
+            print("Pogresan izbor.Unesite broj.")
 
 
 def search_screening_terms():
+    available_criteria = {
+        "movie":"naslov filma", #screening
+        "code":"sifra sale",    #screening
+        "hall":"naziv sale",    #screening
+        "date":"datum odrzavanja",  #screening_term
+        "start_time":"vreme pocetka projekcije",    #screening
+        "end_time":"vreme zavrsetka projekcije"     #screening
+    }
+
+    print("Dostupni kriterijumi:")
+    for index, option in enumerate(available_criteria.values(), start=1):
+        print(f"{index}. {option}")
+
+    command = get_search_option(len(available_criteria.keys()))
+
+    criteria = list(available_criteria.keys())[command-1]
+    search_term = input(f"Unesite vrednost za pretragu po kriterijumu pretrage: {list(available_criteria.values())[command-1]} >> ")
+    screening_terms = screening_term.get_screening_terms_by_criteria(criteria, search_term.strip())
+
+    results = get_search_results(screening_terms)
+
+    screening_term_search_result.add_screening_term_search_results(results)
+    print(screening_term_search_result.format_header())
+    print(screening_term_search_result.format_all_screening_term_search_results())
+
+
+def reserve_ticket_as_buyer():
+    search_screening_terms()
+
+
+
+def show_reserved_tickets():
     pass
 
 
+def cancel_reservation():
+    pass
+
+
+def generate_screening_terms():
+    screening_terms = screening.get_screening_terms()
+    # print(screening_terms)
+    screening_term.generate_screening_terms(screening_terms)
+    print(screening_term.format_header())
+    print(screening_term.format_screening_terms(screening_terms))
+
+
 def menu():
+    # hall2 = {
+    #         "code":"A1",
+    #         "name":"hall_name1",
+    #         "num_rows":"10",
+    #         "seat_marking":"A,B,C,D,E,F,G,H,I,J"
+    #     }
+    # rows = hall.format_hall_rows(hall2)
+    # print(hall.format_rows(rows))
     print_menu()
     command = input(">> ")
     while command.upper() not in ('1', '2', '3', '4', '5', '6', 'X'):
@@ -347,7 +372,7 @@ def buyer_menu():
 def manager_menu():
     print_manager_menu()
     command = input(">> ")
-    while command.upper() not in ('1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', 'X'):
+    while command.upper() not in ('1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', 'X'):
         print("\nUneli ste pogresnu komandu\n")
         print_manager_menu()
         command =  input(">> ")
@@ -367,7 +392,7 @@ def print_menu():
 
 def print_manager_menu():
     print("MENADZER\nIzaberi opciju:")
-    print("1 - Registruj novog prodavca *******")
+    print("1 - Registruj novog prodavca")
     print("2 - Dobavi izvestaj")
     print("3 - Proveri popust za karticu lojalnosti")
     print("4 - Prikazi sedista kao matricu")
@@ -378,6 +403,7 @@ def print_manager_menu():
     print("9 - pretrazi filmove po jednom kriterijumu")
     print("10 - pretrazi filmove po vise kriterijuma")
     print("11 - pretrazi termine bioskopskih projekcija")
+    print("12 - generisi termine za bioskopske projekcije u naredne 2 nedelje")
     print("X - izlaz iz programa")
 
 
@@ -414,5 +440,101 @@ def print_buyer_menu():
     print("X - izlaz iz programa")
 
 
+def handle_manager_command(command):
+    if command == '1':
+        add_seller()
+    elif command == '2':
+        print("TODO")
+    elif command == '3':
+        print("TODO")
+    elif command == '4':
+        print("TODO")
+    elif command == '5':
+        print("TODO")
+    elif command == '6':
+        logout()
+    elif command == '7':
+        update_user()
+    elif command == '8':
+        list_movies()
+    elif command == '9':
+        search_movies_by_one_criterion()
+    elif command == '10':
+        search_movies_by_multiple_criteria()
+    elif command == '11':
+        search_screening_terms()
+    elif command == '12':
+        generate_screening_terms()
+
+
+def handle_seller_command(command):
+    if command == '1':
+        print("TODO")
+    elif command == '2':
+        print("TODO")
+    elif command == '3':
+        print("TODO")
+    elif command == '4':
+        print("TODO")
+    elif command == '5':
+        print("TODO")
+    elif command == '6':
+        print("TODO")
+    elif command == '7':
+        print("TODO")
+    elif command == '8':
+        print("TODO")
+    elif command == '9':
+        logout()
+    elif command == '10':
+        update_user()
+    elif command == '11':
+        list_movies()
+    elif command == '12':
+        search_movies_by_one_criterion()
+    elif command == '13':
+        search_movies_by_multiple_criteria()
+    elif command == '14':
+        search_screening_terms()
+
+
+def handle_buyer_command(command):
+    if command == '1':
+        reserve_ticket_as_buyer()
+    elif command == '2':
+        show_reserved_tickets()
+    elif command == '3':
+        cancel_reservation()
+    elif command == '4':
+        logout()
+    elif command == '5':
+        update_user()
+    elif command == '6':
+        list_movies()
+    elif command == '7':
+        search_movies_by_one_criterion()
+    elif command == '8':
+        search_movies_by_multiple_criteria()
+    elif command == '9':
+        search_screening_terms()
+
+
+def handle_logged_in_user():
+    global logged_in_user_data
+    command = -1
+    if logged_in_user_data['logged_in_role'] == '1':
+        command = manager_menu()
+        handle_manager_command(command)
+    elif logged_in_user_data['logged_in_role'] == '2':
+        command = seller_menu()
+        handle_seller_command(command)
+    elif logged_in_user_data['logged_in_role'] == '3':
+        command = buyer_menu()
+        handle_buyer_command(command)
+    return command
+
 if __name__ == '__main__':
+    # date = datetime.date.today()
+    # print(date)
+    # print(date.strftime('%d.%m.%Y'))
     main()
