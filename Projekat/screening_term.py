@@ -122,6 +122,19 @@ def generate_screening_terms(terms):
     save_screening_terms()
 
 
+def code_exists_in_screening_terms(code):
+    for screening_term in screening_terms:
+        if screening_term['code'].upper() == code.upper():
+            return True
+    return False
+
+
+def get_screening_term_by_code(screening_term_code):
+    for term in screening_terms:
+        if term['code'] == screening_term_code:
+            return term
+    return {}
+
 
 # screening_term1 = {
 #     'code': "1111AA",

@@ -175,15 +175,12 @@ def generate_codes():
 
 def generate_movie_dates(num_weeks, days_of_week):
     movie_dates = []
-    current_date = datetime.date.today()  # Get the current date
+    current_date = datetime.date.today()
 
-    # Iterate over the next 'num_weeks' weeks
     for i in range(num_weeks * 7):
-        # Check if the day is Monday, Tuesday, or Friday
         if current_date.weekday() in days_of_week:
             movie_dates.append(current_date)
 
-        # Move to the next day
         current_date += datetime.timedelta(days=1)
 
     return movie_dates
@@ -213,6 +210,12 @@ def get_screening_terms():
 
     return terms
 
+
+def get_hall_by_screening_code(screening_code):
+    for screening in screenings:
+        if screening['code'] == screening_code:
+            return screening['hall']
+    return ""
 
 # screening1 = {
 #     'code': "1123",

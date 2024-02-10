@@ -1,5 +1,6 @@
 from os.path import exists
 
+from Projekat import ticket
 
 #ogranicenja
 MIN_CODE_LENGTH = 1
@@ -95,17 +96,20 @@ def format_all_halls():
     return format_halls(halls)
 
 
-def format_hall_rows(hall):
-    # hall_name
-    # hall = get_hall_by_name()
+def format_hall_rows(hall, screening_term):
     num_rows = int(hall['num_rows'])
-    seat_marking = hall['seat_marking'].split(',')
+    seat_markings = hall['seat_marking'].split(',')
     formatted_rows = []
 
-    for row in range(num_rows):
-        formatted_row = "{}{:3} ".format("Red", row+1)
-        for seat in range(len(seat_marking)):
-            formatted_row = f"{formatted_row} {seat_marking[seat]}"
+    for r in range(num_rows):
+        formatted_row = "{}{:3} ".format("Red", r+1)
+        for s in range(len(seat_markings)):
+            seat = f"{r+1}{seat_markings[s]}"
+            if ticket.is_seat_occupied(seat, screening_term):
+                seat_marking = 'X'
+            else:
+                seat_marking = seat_markings[s]
+            formatted_row = f"{formatted_row} {seat_marking}"
 
         formatted_rows.append(formatted_row)
 
@@ -119,8 +123,16 @@ def format_rows(rows):
     return formatted_rows
 
 
+def get_hall_by_code(code):
+    for hall in halls:
+        if code.upper() == hall['code'].upper():
+            return hall
+    return {}
 
-#
+
+
+
+
 # hall = {
 #         "code":"code",
 #         "name":"name",

@@ -1,2 +1,8 @@
-mjones|screening_term|seat|sale_date|reserved
-adoliv|screening_term|seat|sale_date|reserved
+omill|1122AA|4D|09.02.2024|reserved
+omill|1111AH|6G|09.02.2024|reserved
+ko|3333AC|8H|09.02.2024|reserved
+ko|7777AD|9F|09.02.2024|reserved
+omill|4444AA|1H|09.02.2024|reserved
+hhh iii|7777AD|9G|10.02.2024|sold
+aaa bbb|1111AG|2C|10.02.2024|reserved
+ppp ooo|3333AC|6D|10.02.2024|sold

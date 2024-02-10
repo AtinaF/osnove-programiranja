@@ -16,6 +16,7 @@ MAX_MOVIE_LENGTH = 17
 MIN_DATE_LENGTH = 1
 MAX_DATE_LENGTH = 30
 
+
 #ispis u zaglavlju tabele
 HEADER_CODE = "Sifra termina projekcije"
 HEADER_HALL = "Sifra sale"
@@ -24,10 +25,9 @@ HEADER_END_TIME = "Vreme zavrsetka projekcije"
 HEADER_MOVIE = "Naziv filma"
 HEADER_DATE = "Datum odrzavanja projekcije"
 
-
-def screening_term_search_result2str(screening):
-    return '|'.join([screening['code'], screening['movie'], screening['hall'], screening['date'], screening['start_time'],
-                     screening['end_time']])
+def screening_term_search_result2str(result):
+    return '|'.join([result['code'], result['movie'], result['hall'], result['date'], result['start_time'],
+                     result['end_time']])
 
 
 def str2screening_term_search_result(line):
@@ -52,12 +52,12 @@ def check_file():
 
 def load_screening_term_search_results():
     check_file()
-    screening_file = open("data/screening_term_search_result.txt", 'r')
-    for line in screening_file.readlines():
+    file = open("data/screening_term_search_result.txt", 'r')
+    for line in file.readlines():
         if len(line) > 1:
             screening_term_search_result = str2screening_term_search_result(line)
             screening_term_search_results.append(screening_term_search_result)
-    screening_file.close()
+    file.close()
 
 
 def save_screening_term_search_results():

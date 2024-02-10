@@ -1,6 +1,6 @@
-import datetime
-
-from Projekat import users, movie, screening_term, screening, hall, screening_term_search_result
+from Projekat import (users, movie, screening_term, screening as screening_module,
+                      hall, screening_term_search_result, ticket,
+                      reserved_tickets_info)
 
 logged_in_user_data = {
     'logged_in_username': "",
@@ -36,6 +36,7 @@ def main():
                     print("Korisnik sa datim korisnickim imenom i lozinkom ne postoji")
             elif komanda=='3':
                 list_movies()
+                # reserve_ticket_as_buyer()
             elif komanda=='4':
                 search_movies_by_one_criterion()
             elif komanda=='5':
@@ -254,17 +255,17 @@ def get_search_results(screening_terms):
     results = []
 
     for term in screening_terms:
-        search_result = {}
-        search_result['code'] = term['code']
-        search_result['date'] = term['date']
-
         screening_code = term['code'][:4]
-        scr = screening.get_screening_by_code(screening_code)
+        screening = screening_module.get_screening_by_code(screening_code)
 
-        search_result['movie'] = scr['movie']
-        search_result['hall'] = scr['hall']
-        search_result['start_time'] = scr['start_time']
-        search_result['end_time'] = scr['end_time']
+        search_result = {
+            'code': term['code'],
+            'date': term['date'],
+            'movie': screening['movie'],
+            'hall': screening['hall'],
+            'start_time': screening['start_time'],
+            'end_time': screening['end_time']
+        }
 
         results.append(search_result)
 
@@ -285,12 +286,12 @@ def get_search_option(num_options):
 
 def search_screening_terms():
     available_criteria = {
-        "movie":"naslov filma", #screening
-        "code":"sifra sale",    #screening
-        "hall":"naziv sale",    #screening
-        "date":"datum odrzavanja",  #screening_term
-        "start_time":"vreme pocetka projekcije",    #screening
-        "end_time":"vreme zavrsetka projekcije"     #screening
+        "movie":"naslov filma",
+        "code":"sifra projekcije",
+        "hall":"sifra sale",
+        "date":"datum odrzavanja",
+        "start_time":"vreme pocetka projekcije",
+        "end_time":"vreme zavrsetka projekcije"
     }
 
     print("Dostupni kriterijumi:")
@@ -300,46 +301,241 @@ def search_screening_terms():
     command = get_search_option(len(available_criteria.keys()))
 
     criteria = list(available_criteria.keys())[command-1]
-    search_term = input(f"Unesite vrednost za pretragu po kriterijumu pretrage: {list(available_criteria.values())[command-1]} >> ")
+    criteria_sr = list(available_criteria.values())[command-1]
+    search_term = input(f"Unesite vrednost za pretragu po kriterijumu pretrage: {criteria_sr} >> ")
     screening_terms = screening_term.get_screening_terms_by_criteria(criteria, search_term.strip())
 
     results = get_search_results(screening_terms)
-
     screening_term_search_result.add_screening_term_search_results(results)
+
     print(screening_term_search_result.format_header())
     print(screening_term_search_result.format_all_screening_term_search_results())
 
 
-def reserve_ticket_as_buyer():
-    search_screening_terms()
+def is_valid_screening_term_code(code):
+    if not screening_term.code_exists_in_screening_terms(code):
+        return False
+    return True
 
+
+def get_seat(hal, screening_term_code):
+    while True:
+        try:
+            seat_row = int(input("Unesite red zeljenog sedista >> "))
+            seat_column = input("Unesite oznaku sedista >> ").upper()
+            seat = f"{seat_row}{seat_column}"
+
+            if (1 <= seat_row and seat_row <= int(hal['num_rows'])
+                    and not ticket.is_seat_occupied(seat, screening_term_code)):
+                return seat
+            else:
+                print("Izabrani red je izvan opsega sale ili ste izabrali zauzeto sediste.")
+        except ValueError:
+            print("Red mora biti broj.")
+
+
+def sell_tickets():
+    command = ""
+    while command.upper() != 'N':
+        print(f"Pretraga termina projekcije\n{'-' * 27}")
+        search_screening_terms()
+        code = ""
+        while not is_valid_screening_term_code(code):
+            code = input("Unesite sifru zeljene projekcije >> ").strip().upper()
+
+        hall_code = screening_module.get_hall_by_screening_code(code[:4])
+        hal = hall.get_hall_by_code(hall_code)
+        rows = hall.format_hall_rows(hal, code)
+        print(f"Slobodni redovi\n{'_' * 15}\nSala: {hal['code']}\n")
+        print(hall.format_rows(rows))
+
+        seat = get_seat(hal, code)
+
+        if logged_in_user_data['logged_in_role'] == '3':
+            username = logged_in_user_data['logged_in_username']
+        elif logged_in_user_data['logged_in_role'] == '2':
+            username = input("Unesite ime i prezime, ili korisnicko ime korisnika >> ")
+        else:
+            username = input("Unesite ime i prezime >> ")
+
+        ticket.sell_ticket(code, seat, username)
+        command = input("Da li zelite da prodate jos karata? [y:n] >> ")
+
+
+
+
+def reserve_ticket():
+    command = ""
+    while command.upper() != 'N':
+        print(f"Pretraga termina projekcije\n{'-'*27}")
+        search_screening_terms()
+        code = ""
+        while not is_valid_screening_term_code(code):
+            code = input("Unesite sifru zeljene projekcije >> ").strip().upper()
+
+        hall_code = screening_module.get_hall_by_screening_code(code[:4])
+        hal = hall.get_hall_by_code(hall_code)
+        rows = hall.format_hall_rows(hal, code)
+        print(f"Slobodni redovi\n{'_'*15}\nSala: {hal['code']}\n")
+        print(hall.format_rows(rows))
+
+        seat = get_seat(hal, code)
+
+        if logged_in_user_data['logged_in_role'] == '3':
+            username = logged_in_user_data['logged_in_username']
+        elif logged_in_user_data['logged_in_role'] == '2':
+            username = input("Unesite ime i prezime, ili korisnicko ime korisnika >> ")
+        else:
+            username = input("Unesite ime i prezime >> ")
+
+        ticket.reserve_ticket(code, seat, username)
+        command = input("Da li zelite da rezervisete jos karata? [y:n] >> ")
+
+
+def sell_reserved_tickets():
+    show_reserved_tickets()
+    print(f"Prodaja rezervisanih karata\n{'_'*27}")
+    screening_term_code = input("Unesite sifru termina projekcije >> ")
+    seat = input("Unesite oznaku sedista >> ")
+    ticket.sell_reserved_ticket(screening_term_code, seat)
+
+
+def get_reserved_tickets_info(reserved_tickets):
+    reserved_tickets_info = []
+
+    for reserved_ticket in reserved_tickets:
+        screening_code = reserved_ticket['screening_term_code'][:4]
+        screening = screening_module.get_screening_by_code(screening_code)
+
+        username = reserved_ticket['username']
+        user = users.get_user_by_username(username)
+
+        if user is None: # karta pripada neregistrovanom korisniku
+            name_and_surname = reserved_ticket['username']
+        else:
+            name = user['name']
+            surname = user['surname']
+            name_and_surname = f"{name} {surname}"
+
+        reserved_ticket_info = {
+            'screening_term_code': reserved_ticket['screening_term_code'],
+            'movie': screening['movie'],
+            'seat': reserved_ticket['seat'],
+            'reservation_date': reserved_ticket['date'],
+            'start_time': screening['start_time'],
+            'end_time': screening['end_time'],
+            'user_name_and_surname': name_and_surname,
+            'reservation_status': reserved_ticket['reserved']
+        }
+
+        reserved_tickets_info.append(reserved_ticket_info)
+
+    return reserved_tickets_info
 
 
 def show_reserved_tickets():
-    pass
+    if logged_in_user_data['logged_in_role'] == '2':
+        reserved_tickets = ticket.get_all_reserved_tickets()
+    else:
+        username = logged_in_user_data['logged_in_username']
+        reserved_tickets = ticket.get_reserved_tickets_by_username(username)
+
+    result = get_reserved_tickets_info(reserved_tickets)
+
+    print(reserved_tickets_info.format_header())
+    print(reserved_tickets_info.format_reserved_tickets_info(result))
+
+
+# def is_valid_seat(seat):
+#     return ticket.seat_belongs_to_user(seat, logged_in_user_data['logged_in_username'])
+
+def show_all_tickets():
+    tickets = ticket.get_all_tickets()
+    result = get_reserved_tickets_info(tickets)
+    print(reserved_tickets_info.format_header())
+    print(reserved_tickets_info.format_reserved_tickets_info(result))
 
 
 def cancel_reservation():
-    pass
+    print(f"Brisanje rezervacija\n{'_'*20}")
+    command = ""
+    while command.upper() != 'N':
+        show_reserved_tickets()
+
+        screening_term_code = input("Unesite sifru projekcije za rezervaciju koju zelite da obrisete >> ").strip().upper()
+        seat = input("Unesite oznaku sedista za rezervaciju koju zelite da obrisete >> ").strip().upper()
+        result = ticket.cancel_reservation(screening_term_code, seat, logged_in_user_data['logged_in_username'])
+        if result:
+            print("Uspesno ponistavanje rezervacije.")
+        else:
+            print("Neuspelo brisanje rezervacije.")
+
+        command = input("Da li zelite da nastavite sa otkazivanjem rezervacija? [y:n] >> ")
+
+
+def cancel_tickets():
+    print(f"Ponistavanje karte\n{'_'*20}")
+    command = ""
+    while command.upper() != 'N':
+        show_all_tickets()
+
+        screening_term_code = input("Unesite sifru projekcije za kartu koju zelite da ponistite >> ").strip().upper()
+        seat = input("Unesite oznaku sedista za kartu koju zelite da ponistite >> ").strip().upper()
+        result = ticket.cancel_ticket(screening_term_code, seat)
+        if result:
+            print("Uspesno ponistavanje karte.")
+        else:
+            print("Neuspelo ponistavanje karte.")
+
+        command = input("Da li zelite da nastavite sa otkazivanjem rezervacija? [y:n] >> ")
+
+
+def get_search_criteria_and_search_term(command, available_criteria):
+    search_criteria = list(available_criteria.keys())[command-1]
+    if command == 7:
+        ticket_status = input("Izaberite opciju\n"
+                              "1. rezervisane karte\n2. kupljene karte\n >> ")
+        if ticket_status == '1':
+            search_term = 'reserved'
+        else:
+            search_term = 'sold'
+    else:
+        search_term = input(f"Unesite izraz za pretragu po kriterijumu {list(available_criteria.values())[command-1]} >> ")
+    return search_criteria, search_term
+
+
+def search_tickets_by_criteria():
+    available_criteria = {
+        "screening_term_code": "sifra projekcije",
+        "name": "ime kupca",
+        "surname": "prezime kupca",
+        "date": "datum",
+        "start_time": "vreme pocetka projekcije",
+        "end_time": "vreme kraja projekcije",
+        "reserved": "da li je u pitanju rezervacija/kupovina"
+    }
+
+    for index, criteria in enumerate(available_criteria.values(), start=1):
+        print(f"{index}.{criteria}")
+
+    command = get_search_option(len(available_criteria.keys()))
+    search_criteria, search_term = get_search_criteria_and_search_term(command, available_criteria)
+    tickets = ticket.get_tickets_by_criteria(search_criteria, search_term)
+
+    results = get_reserved_tickets_info(tickets)
+    print(reserved_tickets_info.format_header())
+    print(reserved_tickets_info.format_reserved_tickets_info(results))
+
 
 
 def generate_screening_terms():
-    screening_terms = screening.get_screening_terms()
-    # print(screening_terms)
+    screening_terms = screening_module.get_screening_terms()
     screening_term.generate_screening_terms(screening_terms)
     print(screening_term.format_header())
     print(screening_term.format_screening_terms(screening_terms))
 
 
 def menu():
-    # hall2 = {
-    #         "code":"A1",
-    #         "name":"hall_name1",
-    #         "num_rows":"10",
-    #         "seat_marking":"A,B,C,D,E,F,G,H,I,J"
-    #     }
-    # rows = hall.format_hall_rows(hall2)
-    # print(hall.format_rows(rows))
     print_menu()
     command = input(">> ")
     while command.upper() not in ('1', '2', '3', '4', '5', '6', 'X'):
@@ -417,6 +613,7 @@ def print_seller_menu():
     print("6 - prodaj rezervisanu kartu")
     print("7 - izmeni kartu")
     print("8 - ponisti rezervaciju 30 min pre pocetka projekcije")
+    #todo p2
     print("9 - izloguj se")
     print("10 - izmeni licne podatke")
     print("11 - pregledaj dostupne filmove")
@@ -469,17 +666,17 @@ def handle_manager_command(command):
 
 def handle_seller_command(command):
     if command == '1':
-        print("TODO")
+        reserve_ticket()
     elif command == '2':
-        print("TODO")
+        show_reserved_tickets()
     elif command == '3':
-        print("TODO")
+        cancel_tickets()
     elif command == '4':
-        print("TODO")
+        search_tickets_by_criteria()
     elif command == '5':
-        print("TODO")
+        sell_tickets()
     elif command == '6':
-        print("TODO")
+        sell_reserved_tickets()
     elif command == '7':
         print("TODO")
     elif command == '8':
@@ -500,7 +697,7 @@ def handle_seller_command(command):
 
 def handle_buyer_command(command):
     if command == '1':
-        reserve_ticket_as_buyer()
+        reserve_ticket()
     elif command == '2':
         show_reserved_tickets()
     elif command == '3':
