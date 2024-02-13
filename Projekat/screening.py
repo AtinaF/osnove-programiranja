@@ -1,5 +1,7 @@
 import datetime
+import re
 from os.path import exists
+from Projekat import hall as hall_module
 
 
 #ogranicenja
@@ -162,6 +164,7 @@ def get_screening_by_code(code):
     for screening in screenings:
         if screening['code'] == code:
             return screening
+    return {}
 
 
 def generate_codes():
@@ -217,29 +220,42 @@ def get_hall_by_screening_code(screening_code):
             return screening['hall']
     return ""
 
-# screening1 = {
-#     'code': "1123",
-#     'hall': "hall12",
-#     'start_time': "12:00",
-#     'end_time': "15:00",
-#     'days': ["ponedeljak", "utorak", "sreda", "nedelja"],
-#     # days=[ponedeljak, utorak, sreda, cetvrtak, petak, subota, nedelja]
-#     'movie': "movie aaa",
-#     'price': "424"
-# }
-# screening2 = {
-#     'code': "1553",
-#     'hall': "hall1fd2",
-#     'start_time': "17:05",
-#     'end_time': "18:35",
-#     'days': ["ponedeljak", "utorak", "sreda", "nedelja"],
-#     # days=[ponedeljak, utorak, sreda, cetvrtak, petak, subota, nedelja]
-#     'movie': "movie adfaa",
-#     'price': "23.00"
-# }
 
-# screenings = [screening1, screening2]
-# save_screenings()
+def is_valid_screening_code(code):
+    pattern =  re.compile(r'^[0-9]+$')
+    return len(code) == 4 and bool(pattern.match(code))
+
+
+def are_days_valid(days):
+    days = days.split(',')
+    if (len(days) <= 7):
+        return True
+    return False
+
+
+def add_screening(screening):
+    if (is_valid_screening_code(screening['code'])
+            and hall_module.hall_code_exists(screening['hall'])
+            and are_days_valid(screening['days'])):
+
+        if not screenings.__contains__(screening):
+            screenings.append(screening)
+            save_screenings()
+
+
+def modify_screening(screening_to_modify, modified_screening):
+    if screenings.__contains__(screening_to_modify):
+        screenings.remove(screening_to_modify)
+        screenings.append(modified_screening)
+        save_screenings()
+
+
+def get_ticket_price(ticket):
+    for screening in screenings:
+        if screening['movie'] == ticket['title']:
+            return float(screening['price'])
+
+
 screenings=[]
 load_screenings()
 save_screenings()

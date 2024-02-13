@@ -151,8 +151,6 @@ def filter_movies_by_criterion(criterion, search_term):
 
 
 def filter_movies_by_criteria(criteria, search_terms):
-    # criteria = ["genra", "director", "duration", "main_roles"]
-    # search_terms = ["genra1", "Mat Smith", "20-40", "role1, role2"]
     filtered_movies = []
 
     for movie in movies:
@@ -174,32 +172,34 @@ def filter_movies_by_criteria(criteria, search_terms):
     return filtered_movies
 
 
-# movie1 = {
-#     "title": "Title1",
-#     "genre": "Genre1",
-#     "duration": "Duration1",
-#     "director": "Director1",
-#     "main_roles": "Main1, Main2, Main3",
-#     "country": "Country1",
-#     "year": "2001",
-#     "description": "Description1"
-# }
-#
-# movie2 = {
-#     "title": "Title2",
-#     "genre": "Genre2",
-#     "duration": "Duration2",
-#     "director": "Director2",
-#     "main_roles": "Main4, Main5, Main6",
-#     "country": "Country2",
-#     "year": "2002",
-#     "description": "Description2"
-# }
-#
-# movies = [movie1, movie2]
+def add_movie(movie):
+    if get_movie_by_title(movie['title']) == {}:
+        movies.append(movie)
+        save_movies()
+
+
+def get_movie_by_title(title):
+    for movie in movies:
+        if movie['title'].upper() == title.upper():
+            return movie
+    return {}
+
+
+def modify_movie(movie_to_modify, modified_movie):
+    if movies.__contains__(movie_to_modify):
+        movies.remove(movie_to_modify)
+        movies.append(modified_movie)
+        save_movies()
+
+
+def delete_movie(movie):
+    if movies.__contains__(movie):
+        movies.remove(movie)
+        save_movies()
+
+
 movies=[]
 load_movies()
-# save_movies()
 formated_movies = format_all_movies()
 print(format_header())
 print(formated_movies)

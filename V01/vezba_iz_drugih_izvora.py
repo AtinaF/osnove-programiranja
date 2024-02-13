@@ -319,81 +319,467 @@ import random
 # result = list(set(a + b))
 # print(result)
 
-# 15 Write a program (using functions!) that asks the user for a long string containing multiple words.
-# Print back to the user the same string, except with the words in backwards order. For example, say I type the string:
-#   My name is Michele
-# Then I would see the string:
-#   Michele is name My
-# shown back to me.
+# # 15 Write a program (using functions!) that asks the user for a long string containing multiple words.
+# # Print back to the user the same string, except with the words in backwards order. For example, say I type the string:
+# #   My name is Michele
+# # Then I would see the string:
+# #   Michele is name My
+# # shown back to me.
+#
+# user_input = input("Enter a string: ")
+# # substrings = user_input.split(" ")
+# substrings = [s.strip() for s in user_input.split(',')]
+# backwards_string = substrings[::-1]
+# print(backwards_string)
 
-user_input = input("Enter a string: ")
-substrings = user_input.split(" ")
-backwards_string = substrings[::-1]
-print(backwards_string)
+# #16 Note: this is a 4-chili exercise, not because it introduces a concept, but because this exercise is more like a project.
+# # Feel free to skip this and come back when you’re more ready!
+# # Write a password generator in Python. Be creative with how you generate passwords
+# # - strong passwords have a mix of lowercase letters, uppercase letters, numbers,
+# # and symbols. The passwords should be random, generating a new password every time
+# # the user asks for a new password. Include your run-time code in a main method.
+# # Extra:
+# #  Ask the user how strong they want their password to be. For weak passwords, pick a word or two from a list.
+#
+#
+# def generate_values(is_password_weak):
+#     # list(map(chr, range(ord('a'), ord('z')+1)))
+#     lower_case = list(map(chr, range(97, 123)))
+#     upper_case = list(map(chr, range(65, 91)))
+#     digits = ['0' ,'1', '2', '3', '4', '5', '6', '7', '8', '9']
+#     special_characters = list(map(chr, range(33, 48)))
+#
+#     if not is_password_weak:
+#         values = lower_case + upper_case + digits + special_characters
+#     else:
+#         values = lower_case + upper_case
+#
+#     return values
+#
+#
+# def generate_password(is_weak):
+#     password = ""
+#     values = generate_values(is_weak)
+#     for i in range(30):
+#         # password += values[random.randint(0, values.__len__()-1)]
+#         password+=random.choice(values)
+#     return password
+#
+#
+# command = ""
+# while command != 'N':
+#     command = input("Generate password? y:n >> ").upper()
+#     if command != 'N' and command != 'Y':
+#         print("Wrong command.")
+#     elif command == 'Y':
+#         option = input("How strong do you want your password to be? \n1. strong\n2. weak \n>> ")
+#         if option != "1" and option != "2":
+#             print("Wrong option.")
+#         else:
+#             print("Your password is: ", generate_password(option=="2"))
 
 
-#16 Note: this is a 4-chili exercise, not because it introduces a concept, but because this exercise is more like a project.
-# Feel free to skip this and come back when you’re more ready!
-# Write a password generator in Python. Be creative with how you generate passwords
-# - strong passwords have a mix of lowercase letters, uppercase letters, numbers,
-# and symbols. The passwords should be random, generating a new password every time
-# the user asks for a new password. Include your run-time code in a main method.
+# #17 Note: this is a 4-chili exercise, not because it introduces a concept (although it introduces a new library),
+# # but because this exercise is more like a project. Feel free to skip this and come back when you’re more ready!
+# # Use the BeautifulSoup and requests Python packages to print out a list of all the article titles on the New York Times homepage.
+# # Concepts for this week:
+# #
+# #     Libraries
+# #     requests
+# #     BeautifulSoup
+#
+# import requests
+# from bs4 import BeautifulSoup
+#
+# url = "https://www.nytimes.com/"
+# response = requests.get(url)
+# website_html = response.text
+#
+# soup = BeautifulSoup(website_html, features="lxml")
+# title = soup.find('title').string
+# print(title)
+
+
+# #from bs4 import BeautifulSoup
+# soup = BeautifulSoup(html_doc, 'html.parser')
+#
+# print(soup.prettify())
+#
+# <html>
+#  <head>
+#   <title>
+#    The Dormouse's story
+#   </title>
+#  </head>
+#  <body>
+#   <p class="title">
+#    <b>
+#     The Dormouse's story
+#    </b>
+#   </p>
+#   <p class="story">
+#    Once upon a time there were three little sisters; and their names were
+#    <a class="sister" href="http://example.com/elsie" id="link1">
+#     Elsie
+#    </a>
+#    ,
+#    <a class="sister" href="http://example.com/lacie" id="link2">
+#     Lacie
+#    </a>
+#    and
+#    <a class="sister" href="http://example.com/tillie" id="link2">
+#     Tillie
+#    </a>
+#    ; and they lived at the bottom of a well.
+#   </p>
+#   <p class="story">
+#    ...
+#   </p>
+#  </body>
+# </html>
+
+# soup.title
+# # <title>The Dormouse's story</title>
+#
+# soup.title.name
+# # u'title'
+#
+# soup.title.string
+# # u'The Dormouse's story'
+#
+# soup.title.parent.name
+# # u'head'
+#
+# soup.p
+# # <p class="title"><b>The Dormouse's story</b></p>
+#
+# soup.p['class']
+# # u'title'
+#
+# soup.a
+# # <a class="sister" href="http://example.com/elsie" id="link1">Elsie</a>
+#
+# soup.find_all('a')
+# # [<a class="sister" href="http://example.com/elsie" id="link1">Elsie</a>,
+# #  <a class="sister" href="http://example.com/lacie" id="link2">Lacie</a>,
+# #  <a class="sister" href="http://example.com/tillie" id="link3">Tillie</a>]
+#
+# soup.find(id="link3")
+# # <a class="sister" href="http://example.com/tillie" id="link3">Tillie</a>
+
+
+# #18 Create a program that will play the “cows and bulls” game with the user. The game works like this:
+# # Randomly generate a 4-digit number. Ask the user to guess a 4-digit number.
+# # For every digit that the user guessed correctly in the correct place, they have a “cow”.
+# # For every digit the user guessed correctly in the wrong place is a “bull.”
+# # Every time the user makes a guess, tell them how many “cows” and “bulls” they have.
+# # Once the user guesses the correct number, the game is over.
+# # Keep track of the number of guesses the user makes throughout teh game and tell the user at the end.
+# #
+# # Say the number generated by the computer is 1038. An example interaction could look like this:
+# #   Welcome to the Cows and Bulls Game!
+# #   Enter a number:
+# #   >>> 1234
+# #   2 cows, 0 bulls
+# #   >>> 1256
+# #   1 cow, 1 bull
+# #   ...
+# #
+# # Until the user guesses the number.
+#
+# generated_number = (random.randint(1000, 9999)).__str__()
+# print(generated_number)
+# guess = ""
+# number_of_guesses = 0
+# while guess != generated_number:
+#     guess = input("Enter a 4-digit number: >> ").strip()
+#     number_of_guesses += 1
+#     bulls = 0
+#     cows = 0
+#     for i in range(generated_number.__len__()):
+#         if generated_number.__contains__(guess[i]) and generated_number[i] == guess[i]:
+#             cows += 1
+#         elif generated_number.__contains__(guess[i]) and generated_number[i] != guess[i]:
+#             bulls += 1
+#     print("{} cows, {} bulls ".format(cows, bulls))
+#
+# print("You guessed the number in {0} tries. ".format(number_of_guesses))
+
+
+# #19 Using the requests and BeautifulSoup Python libraries, print to the screen the full text of the article
+# # on this website: http://www.vanityfair.com/society/2014/06/monica-lewinsky-humiliation-culture.
+# # The article is long, so it is split up between 4 pages. Your task is to print out the text to the screen
+# # so that you can read the full article without having to click any buttons.
+# # (Hint: The post here describes in detail how to use the BeautifulSoup and requests libraries through
+# # the solution of the exercise posted here.)
+# #
+# # This will just print the full text of the article to the screen.
+# # It will not make it easy to read, so next exercise we will learn how to write this text to a .txt file.
+#
+# import requests
+# from bs4 import BeautifulSoup
+#
+# url = "http://www.vanityfair.com/society/2014/06/monica-lewinsky-humiliation-culture"
+# response = requests.get(url)
+# page_html = response.text
+#
+# soup = BeautifulSoup(page_html, features="lxml")
+# elements = soup.find_all(class_ ='BodyWrapper-kufPGa fxGCxI body body__container article__body');
+#
+# text = ""
+#
+# for div in elements:
+#     for inner_div in div.contents:
+#         # print(inner_div)
+#         all_children_p_tags = inner_div.find_all('p')
+#         for p in all_children_p_tags:
+#             text += p.text + "\n"
+#
+# print(text)
+
+
+# #20 Write a function that takes an ordered list of numbers
+# # (a list where the elements are in order from smallest to largest) and another number.
+# # The function decides whether or not the given number is inside the list and returns (then prints) an appropriate boolean.
+# # Extras:
+# # use binary search.
+#
+# def contains_number(ordered_list, number):
+#     if number < ordered_list[0] or number > ordered_list[len(ordered_list)-1]:
+#         return False
+#     else:
+#         return search(0, len(ordered_list), ordered_list, number)
+#
+#
+# def search(start, end, ordered_list, number):
+#     median_index = math.floor((start+end)/2)
+#     median = ordered_list[median_index]
+#
+#     if number == median:
+#         return True
+#     elif end == start + 1:
+#         return False
+#     elif number > median:
+#         return search(median_index, end, ordered_list, number)
+#     elif number < median:
+#         return search(start, median_index, ordered_list, number)
+#
+#
+# list1 = list(random.randint(10, 70) for i in range(50))
+# list1.sort()
+# print(list1)
+# print(contains_number(list1, 57))
+
+# # 21 Take the code from the How To Decode A Website exercise
+# # (if you didn’t do it or just want to play with some different code,
+# # use the code from the solution), and instead of printing the results
+# # to a screen, write the results to a txt file. In your code, just
+# # make up a name for the file you are saving to.
+# # Extras:
+# #     Ask the user to specify the name of the output file that will be saved.
+#
+# import requests
+# from bs4 import BeautifulSoup
+# from os.path import exists
+#
+#
+# url = "http://www.vanityfair.com/society/2014/06/monica-lewinsky-humiliation-culture"
+# result = requests.get(url)
+# page_html = result.text
+#
+# soup = BeautifulSoup(page_html, features='lxml')
+# elements = soup.find_all(class_ ='BodyWrapper-kufPGa fxGCxI body body__container article__body')
+# text = ""
+#
+# for div in elements:
+#     for inner_div in div.contents:
+#         paragraphs = inner_div.find_all('p')
+#         for p in paragraphs:
+#             text += p.text + "\n"
+#
+# file_name = input("Enter file name >> ")
+# if not exists(file_name):
+#     open(file_name, 'w').close()
+#
+# file = open(file_name, 'w')
+# file.write(text)
+# file.close()
+
+
+#22 Given a .txt file that has a list of a bunch of names, count how many of each name there
+# are in the file, and print out the results to the screen. I have a .txt file for you, if you want to use it!
 # Extra:
-#  Ask the user how strong they want their password to be. For weak passwords, pick a word or two from a list.
+#     Instead of using the .txt file from above (or instead of, if you want the challenge),
+#     take this .txt file, and count how many of each “category” of each image there are.
+#     This text file is actually a list of files corresponding to the SUN database scene
+#     recognition database, and lists the file directory hierarchy for the images. Once
+#     you take a look at the first line or two of the file, it will be clear which part
+#     represents the scene category. To do this, you’re going to have to remember a bit
+#     about string parsing in Python 3. I talked a little bit about it in this post.
 
-#17 Note: this is a 4-chili exercise, not because it introduces a concept (although it introduces a new library),
-# but because this exercise is more like a project. Feel free to skip this and come back when you’re more ready!
-# Use the BeautifulSoup and requests Python packages to print out a list of all the article titles on the New York Times homepage.
-# Concepts for this week:
+# from os.path import exists
 #
-#     Libraries
-#     requests
-#     BeautifulSoup
-
-#18 Create a program that will play the “cows and bulls” game with the user. The game works like this:
-# Randomly generate a 4-digit number. Ask the user to guess a 4-digit number.
-# For every digit that the user guessed correctly in the correct place, they have a “cow”.
-# For every digit the user guessed correctly in the wrong place is a “bull.”
-# Every time the user makes a guess, tell them how many “cows” and “bulls” they have.
-# Once the user guesses the correct number, the game is over.
-# Keep track of the number of guesses the user makes throughout teh game and tell the user at the end.
+# file_name = "22_names.txt"
+# names = []
 #
-# Say the number generated by the computer is 1038. An example interaction could look like this:
-#   Welcome to the Cows and Bulls Game!
-#   Enter a number:
-#   >>> 1234
-#   2 cows, 0 bulls
-#   >>> 1256
-#   1 cow, 1 bull
-#   ...
+# if not exists(file_name):
+#     open(file_name, 'w').close()
 #
-# Until the user guesses the number.
-
-
-#19 Using the requests and BeautifulSoup Python libraries, print to the screen the full text of the article
-# on this website: http://www.vanityfair.com/society/2014/06/monica-lewinsky-humiliation-culture.
-# The article is long, so it is split up between 4 pages. Your task is to print out the text to the screen
-# so that you can read the full article without having to click any buttons.
-# (Hint: The post here describes in detail how to use the BeautifulSoup and requests libraries through
-# the solution of the exercise posted here.)
+# file = open(file_name, 'r')
+# for line in file.readlines():
+#     names.append(line[:-1])
+# file.close()
 #
-# This will just print the full text of the article to the screen.
-# It will not make it easy to read, so next exercise we will learn how to write this text to a .txt file.
+# unique_names = set(names)
+# dict = {}
+#
+# for name in names:
+#     if name in dict:
+#         dict[name] += 1
+#     else:
+#         dict[name] = 1
+#
+# print(dict)
 
-#20 Write a function that takes an ordered list of numbers
-# (a list where the elements are in order from smallest to largest) and another number.
-# The function decides whether or not the given number is inside the list and returns (then prints) an appropriate boolean.
-# Extras:
-# use binary search.
+# from os.path import exists
+#
+# file_name = "22_categories.txt"
+# if not exists(file_name):
+#     open(file_name, 'w').close()
+#
+# file_paths = []
+# file = open(file_name, 'r')
+# for line in file.readlines():
+#     if line != "":
+#         file_paths.append(line)
+# file.close()
+#
+# categories = {}
+#
+# for file_path in file_paths:
+#     category = file_path.split('/')[2]
+#     if category in categories:
+#         categories[category] += 1
+#     else:
+#         categories[category] = 1
+#
+# print(categories)
 
+# # 23 Given two .txt files that have lists of numbers in them, find the numbers that
+# # are overlapping. One .txt file has a list of all prime numbers under 1000, and the
+# # other .txt file has a list of happy numbers up to 1000.
+#
+# from os.path import  exists
+#
+# primes_file = "primes.txt"
+# happy_numbers_file = "happy_numbers.txt"
+#
+#
+# def get_numbers_from_file(filename):
+#     result = []
+#     if exists(filename):
+#         file = open(filename, 'r')
+#         for line in file.readlines():
+#             if line != '\n':
+#                 result.append(line[:-1])
+#         file.close()
+#     return result
+#
+#
+# def get_duplicates(list_a, list_b):
+#     duplicates = []
+#     for element in list_a:
+#         if list_b.__contains__(element):
+#             duplicates.append(element)
+#     return duplicates
+#
+#
+# primes = get_numbers_from_file(primes_file)
+# happy_numbers = get_numbers_from_file(happy_numbers_file)
+# print(primes)
+# print("Duplicates found: \n {}".format(set(get_duplicates(primes, happy_numbers))))
 
+# # 24 In a previous exercise, we’ve written a program that “knows” a number and asks a user to guess it.
+# # This time, we’re going to do exactly the opposite. You, the user, will have in your head a number
+# # between 0 and 100. The program will guess a number, and you, the user, will say whether it is too high,
+# # too low, or your number.
+# # At the end of this exchange, your program should print out how many guesses it took to get your number.
+#
+#
+# possibilities = list(range(100))
+#
+# user_input = ""
+# guess = possibilities[math.floor(len(possibilities)/2)]
+# number_of_guesses = 0
+# start = 0
+# end = len(possibilities)-1
+#
+#
+# def get_next_element(start, end, values):
+#     middle_index = math.floor((start+end)/2)
+#     return values[middle_index]
+#
+#
+# while user_input.lower() != 'yes':
+#     number_of_guesses += 1
+#     user_input = input("Is this your number? {}\n[yes/no]>>".format(guess))
+#     if user_input != 'yes':
+#         user_input = input("Is your number lower [<] or greater [>] than {}?\nType '<' or '>'\n>> ".format(guess))
+#         if user_input == '>':
+#             start = possibilities.index(guess)
+#             guess = get_next_element(start, end, possibilities)
+#         elif user_input == '<':
+#             end = possibilities.index(guess)
+#             guess = get_next_element(start, end, possibilities)
+#         else:
+#             print("Wrong input. ")
+#
+# print("Number guessed: {}\n Number of guesses: {}".format(guess, number_of_guesses))
 
-
-
-
-
-
-
-
+# #25 As you may have guessed, we are trying to build up to a full tic-tac-toe board.
+# # However, this is significantly more than half an hour of coding, so we’re doing it in pieces.
+# #
+# # Today, we will simply focus on checking whether someone has WON a game of Tic Tac Toe,
+# # not worrying about how the moves were made.
+# # If a game of Tic Tac Toe is represented as a list of lists, like so:
+# # game = [[1, 2, 0],
+# # 	[2, 1, 0],
+# # 	[2, 1, 1]]
+# #
+# # where a 0 means an empty square, a 1 means that player 1 put their token in that space,
+# # and a 2 means that player 2 put their token in that space.
+# #
+# # Your task: given a 3 by 3 list of lists that represents a Tic Tac Toe game board,
+# # tell me whether anyone has won, and tell me which player won, if any.
+# # A Tic Tac Toe win is 3 in a row - either in a row, a column, or a diagonal.
+# # Don’t worry about the case where TWO people have won - assume that in every board there will only be one winner.
+#
+# game = [[2, 1, 0],
+#         [1, 2, 0],
+#         [2, 2, 2]]
+#
+# def find_winner(game):
+#     winner = 0
+#
+#     for i in range(3):
+#         # row has winner:
+#         if game[i][0] == game[i][1] == game[i][2] != 0:
+#             winner = game[i][0]
+#             #column
+#         elif game[0][i] == game[1][i] == game[2][i] != 0:
+#             winner = game[0][i]
+#
+#     #diagonal
+#     if game[0][0] == game[1][1] == game[2][2] != 0:
+#         winner = game[0][0]
+#
+#     return winner
+#
+#
+# winner = find_winner(game)
+# if winner == 0:
+#     print("There are no winners.")
+# else:
+#     print("The winner is: {}".format(winner))
 
 

@@ -53,9 +53,9 @@ def save_screening_terms():
 
 def format_header():
     header = "{0}|{1}\n".format(HEADER_CODE.ljust(MAX_CODE_LENGTH),
-                                            HEADER_DATE.ljust(MAX_DATE_LENGTH))
+                                      HEADER_DATE.ljust(MAX_DATE_LENGTH))
     lines = "{0}+{1}".format('_' * MAX_CODE_LENGTH,
-                                '_' * MAX_DATE_LENGTH)
+                                    '_' * MAX_DATE_LENGTH)
 
     return "{}{}".format(header, lines)
 
@@ -65,6 +65,7 @@ def format_screening_term(screening_term):
             "{{1:{}}}").format(MAX_CODE_LENGTH,
                                       MAX_DATE_LENGTH).format(screening_term["code"],
                                                                      screening_term["date"])
+
 
 def format_screening_terms(screening_terms_list):
     result = ""
@@ -136,16 +137,6 @@ def get_screening_term_by_code(screening_term_code):
     return {}
 
 
-# screening_term1 = {
-#     'code': "1111AA",
-#     'date': "01.02.2023.",
-# }
-# screening_term2 = {
-#     'code': "1211AB",
-#     'date': "01.02.2023.",
-# }
-#
-# screening_terms=[screening_term1, screening_term2]
 screening_terms = []
 load_screening_terms()
 print(format_header())

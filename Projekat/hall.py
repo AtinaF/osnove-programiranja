@@ -130,25 +130,13 @@ def get_hall_by_code(code):
     return {}
 
 
+def hall_code_exists(code):
+    for hall in halls:
+        if code.upper() == hall['code'].upper():
+            return True
+    return False
 
 
-
-# hall = {
-#         "code":"code",
-#         "name":"name",
-#         "num_rows":"num_rows",
-#         "seat_marking":"seat_marking"
-#     }
-#
-# hall2 = {
-#         "code":"codeer",
-#         "name":"nameerw",
-#         "num_rows":"num_rowsrew",
-#         "seat_marking":"seat_markingewr"
-#     }
-
-# halls = [hall, hall2]
-# save_halls()
 halls = []
 load_halls()
 print(format_header())

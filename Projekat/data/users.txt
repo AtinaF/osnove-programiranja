@@ -3,7 +3,7 @@ adoliv|pass817|Alice|Olivia|1
 csmit|pass543|Charlie|Smith|2
 edavie|pass189|Eva|Davis|2
 ddavie|pass824|David|Davis|3
-omill|pass756|Olivia|Miller|3
+omill|pass756|olivia|miller|3
 mwill|pass309|Michael|Williams|3
 dsmit|pass467|Daniel|Smith|3
 bsmith|pass221|Marco|Polo|2

@@ -1,3 +1,4 @@
+import datetime
 from Projekat import (users, movie, screening_term, screening as screening_module,
                       hall, screening_term_search_result, ticket,
                       reserved_tickets_info)
@@ -164,7 +165,6 @@ def update_user():
             "surname" : surname,
             "role" : logged_in_user_data["logged_in_role"]
         }
-        #print(user_to_update)
 
         if is_validated(user_to_update):
             users.update_user_data(user_to_update)
@@ -192,9 +192,6 @@ def get_user_criterion():
         "description": "opis"
     }
 
-    # available_criteria_sr = ["naziv filma", "zanr", "trajanje", "reziser", "glavne uloge", "zemlja porekla", "godina proizvodnje", "opis"]
-    # available_criteria_en = ["title", "genre", "duration", "director", "main_roles", "country", "year", "description"]
-
     print("Dostupni kriterijumi:")
     for index, criterion in enumerate(available_criteria.values(), start=1):
         print(f"{index}. {criterion}")
@@ -217,7 +214,6 @@ def get_user_criteria():
     while command.upper() != "X":
         criteria.append(get_user_criterion())
         command = input("Unesite 'x' - za kraj unosa, ili bilo sta drugo za nastavak>> ")
-    # print(criteria)
     return list(set(criteria))
 
 
@@ -446,9 +442,6 @@ def show_reserved_tickets():
     print(reserved_tickets_info.format_reserved_tickets_info(result))
 
 
-# def is_valid_seat(seat):
-#     return ticket.seat_belongs_to_user(seat, logged_in_user_data['logged_in_username'])
-
 def show_all_tickets():
     tickets = ticket.get_all_tickets()
     result = get_reserved_tickets_info(tickets)
@@ -527,12 +520,277 @@ def search_tickets_by_criteria():
     print(reserved_tickets_info.format_reserved_tickets_info(results))
 
 
+def validate_modified_ticket_info(screening_term_code, seat):
+    if (is_valid_screening_term_code(screening_term_code)
+            and not ticket.is_seat_occupied(seat, screening_term_code)):
+        return True
+    return False
+
+
+def modify_ticket():
+    show_all_tickets()
+    print(f"Izmena karte\n{'_'*12}")
+    code = input("Unesite sifru termina projekcije >> ").strip().upper()
+    seat = input("Unesite broj sedista >> ").strip().upper()
+    name = input("Unesite ime kupca >> ").strip()
+    surname = input("Unesite prezime kupca >> ").strip()
+
+    ticket_to_modify = ticket.find_ticket_by(code, name, surname, seat)
+
+    if ticket_to_modify != {}:
+        ticket.remove_ticket(ticket_to_modify)
+        new_code = input("Unesite nov termin bioskopske projekcije >> ").strip().upper()
+        new_seat = input("Unesite novo sediste >> ").strip().upper()
+        new_name = input("Unesite novo ime kupca >> ").strip()
+        new_surname = input("Unesite novo prezime kupca >> ").strip()
+
+        if validate_modified_ticket_info(new_code, new_seat):
+            ticket.modify_ticket(ticket_to_modify['reserved'], ticket_to_modify['date'], ticket_to_modify['username'],
+                                 new_code, new_name, new_surname, new_seat)
+        else:
+            print("Uneli ste nepostojeci termin projekcije ili zauzeto sediste.")
+    else:
+        print("Karta sa takvim podacima ne postoji.")
+
+
+def cancel_reservations_30_min_before_start():
+    tickets_to_cancel = []
+    reserved_tickets = ticket.get_all_reserved_tickets()
+    for reserved_ticket in reserved_tickets:
+        today = datetime.date.today().strftime('%d.%m.%Y')
+
+        if reserved_ticket['date'] == today:
+            screening = screening_module.get_screening_by_code(reserved_ticket['screening_term_code'][:4])
+            start_time = datetime.datetime.strptime(screening['start_time'], "%H:%M").time()
+            current_time = datetime.datetime.now().time()
+            new_time = (datetime.datetime.combine(datetime.date.today(), current_time)
+                        + datetime.timedelta(minutes=30)).time()
+
+            if current_time <= start_time <= new_time:
+                tickets_to_cancel.append(reserved_ticket)
+
+    if len(tickets_to_cancel) > 0 :
+        for ticket_to_cancel in tickets_to_cancel:
+            ticket.cancel_ticket(ticket_to_cancel['screening_term_code'],
+                                 ticket_to_cancel['seat'])
+
 
 def generate_screening_terms():
     screening_terms = screening_module.get_screening_terms()
     screening_term.generate_screening_terms(screening_terms)
     print(screening_term.format_header())
     print(screening_term.format_screening_terms(screening_terms))
+
+
+def print_report_menu():
+    print("1. izvestaj a")
+    print("2. izvestaj b")
+    print("3. izvestaj h")
+
+
+def get_report_a():
+    sale_date = input("Unesite datum prodaje karte >> ")
+    tickets = ticket.get_sold_tickets_by_sale_date(sale_date)
+
+    if len(tickets) > 0:
+        results = get_reserved_tickets_info(tickets)
+        print(reserved_tickets_info.format_header())
+        print(reserved_tickets_info.format_reserved_tickets_info(results))
+    else:
+        print("Nema karata za odabrani datum")
+
+
+def get_report_b():
+    screening_term_date = input("Unesite datum termina projekcije >> ")
+    tickets = ticket.get_sold_tickets_by_screening_term_date(screening_term_date)
+    if len(tickets) > 0:
+        results = get_reserved_tickets_info(tickets)
+        print(reserved_tickets_info.format_header())
+        print(reserved_tickets_info.format_reserved_tickets_info(results))
+    else:
+        print("Nema karata za odabrani datum termina projekcije")
+
+
+def get_report_h():
+    for movie_ticket in ticket.get_all_tickets():
+        price = screening_module.get_ticket_price(movie_ticket)
+        print(f"Karta {movie_ticket['code']}, cena: {price}")
+
+
+def handle_report_command(command):
+    if command == 1:
+        get_report_a()
+    elif command == 2:
+        get_report_b()
+    else:
+        get_report_h()
+
+
+def get_reports():
+    print_report_menu()
+    command = get_search_option(3)
+    handle_report_command(command)
+
+
+def create_movie():
+    while True:
+        try:
+            movie_to_add = {
+                "title": input("Unesite naziv filma >> ").strip(),
+                "genre": input("Unesite zanr >> ").strip(),
+                "duration": int(input("Unesite trajanje filma >> ").strip()),
+                "director": input("Unesite rezisera >> ").strip(),
+                "main_roles": input("Unesite glavne uloge >> ").strip(),
+                "country": input("Unesite zemlju porekla >> ").strip(),
+                "year": int(input("Unesite godinu proizvodnje >> ").strip()),
+                "description": input("Unesite opis filma").strip()
+            }
+            break
+        except ValueError:
+            print("Trajanje i godina proizvodnje moraju biti brojevi.")
+
+    movie.add_movie(movie_to_add)
+
+
+def modify_movie():
+    title = input("Unesite naziv filma koji zelite da izmenite >> ")
+    movie_to_modify = movie.get_movie_by_title(title)
+    if not movie_to_modify == {}:
+        while True:
+            try:
+                modified_movie = {
+                    "title": input("Unesite naziv filma >> ").strip(),
+                    "genre": input("Unesite zanr >> ").strip(),
+                    "duration": int(input("Unesite trajanje filma >> ").strip()),
+                    "director": input("Unesite rezisera >> ").strip(),
+                    "main_roles": input("Unesite glavne uloge >> ").strip(),
+                    "country": input("Unesite zemlju porekla >> ").strip(),
+                    "year": int(input("Unesite godinu proizvodnje >> ").strip()),
+                    "description": input("Unesite opis filma >> ").strip()
+                }
+                break
+            except ValueError:
+                print("Trajanje i godina proizvodnje moraju biti brojevi.")
+        movie.modify_movie(movie_to_modify, modified_movie)
+    else:
+        print("Uneli ste nepostojeci naziv. ")
+
+
+def delete_movie():
+    title = input("Unesite naziv filma koji zelite da obrisete >> ")
+    movie_to_delete = movie.get_movie_by_title(title)
+    if movie_to_delete != {}:
+        movie.delete_movie(movie_to_delete)
+
+
+def handle_movies_as_manager():
+    print("1. unesi novi film")
+    print("2. izmeni postojeci film")
+    print("3. obrisi film")
+
+    while True:
+        try:
+            command = int(input("Unesite zeljenu opciju >> "))
+            break
+        except ValueError:
+            print("Pogresan izbor. Izbor mora biti broj. ")
+
+    if command == 1:
+        create_movie()
+    elif command == 2:
+        modify_movie()
+    elif command == 3:
+        delete_movie()
+
+
+def create_screening():
+    while True:
+        try:
+            screening_to_add = {
+                'code': input("Unesite sifru projekcije >> ").strip(),
+                'hall': input("Unesite sifru sale >> ").strip(),
+                'start_time': input("Unesite vreme pocetka projekcije >> ").strip(),
+                'end_time': input("Unesite vreme kraja projekcije >> ").strip(),
+                'days': input("Unesite dane kojima se daje projekcija >> ").strip(),
+                'movie': input("Unesite naziv filma >> ").strip(),
+                'price': float(input("Unesite cenu filma >> ").strip())
+            }
+            break
+        except ValueError:
+            print("Cena mora biti broj.")
+
+    screening_module.add_screening(screening_to_add)
+
+
+def modify_screening():
+    code = input("Unesite sifru projekcije koju zelite da izmenite >> ")
+    screening_to_modify = screening_module.get_screening_by_code(code)
+
+    if not screening_to_modify == {}:
+        modified_screening = {
+            'code': input("Unesite sifru projekcije >> ").strip(),
+            'hall': input("Unesite sifru sale >> ").strip(),
+            'start_time': input("Unesite vreme pocetka projekcije >> ").strip(),
+            'end_time': input("Unesite vreme kraja projekcije >> ").strip(),
+            'days': input("Unesite dane kojima se daje projekcija >> ").strip(),
+            'movie': input("Unesite naziv filma >> ").strip(),
+            'price': input("Unesite cenu filma >> ").strip()
+        }
+        movie.modify_movie(screening_to_modify, modified_screening)
+    else:
+        print("Uneli ste nepostojeci kod. ")
+    print("Izmena postojece projekcije.\nUnesite podatke o projekciji >> ")
+    screening_module.modify_screening(screening_to_modify, modified_screening)
+
+
+def delete_screening():
+    screening_code = input("Unesite sifru projekcije >> ")
+    screening = screening_module.get_screening_by_code(screening_code)
+    if screening != {}:
+        screening_module.delete_screening(screening_code)
+    else:
+        print("Projekcija pod tom sifrom ne postoji.")
+
+
+def handle_screening_terms_as_manager():
+    print("1. unesi novu projekciju")
+    print("2. izmeni postojecu projekciju")
+    print("3. obrisi projekciju")
+
+    while True:
+        try:
+            command = int(input("Unesite zeljenu opciju >> "))
+            break
+        except ValueError:
+            print("Pogresan izbor. Izbor mora biti broj. ")
+
+    if command == 1:
+        create_screening()
+    elif command == 2:
+        modify_screening()
+    elif command == 3:
+        delete_screening()
+
+
+def check_loyalty_card_discount():
+    print("Checking discounts")
+
+
+def change_ticket_price():
+    print("Setting new price")
+
+
+def print_seats_as_matrix():
+    hall_code = input("Unesite sifru sale >> ").strip()
+    screening_term_code = input("Unesite sifru projekcije >> ").strip()
+    hal = hall.get_hall_by_code(hall_code)
+    term = screening_term.get_screening_term_by_code(screening_term_code)
+    if hall != {} and term != {}:
+        rows = hall.format_hall_rows(hal, term)
+        formatted_rows = hall.format_rows(rows)
+        print(formatted_rows)
+    else:
+        print("Uneli ste nepostojecu sifru sale ili projekcije.")
 
 
 def menu():
@@ -568,7 +826,7 @@ def buyer_menu():
 def manager_menu():
     print_manager_menu()
     command = input(">> ")
-    while command.upper() not in ('1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', 'X'):
+    while command.upper() not in ('1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', 'X'):
         print("\nUneli ste pogresnu komandu\n")
         print_manager_menu()
         command =  input(">> ")
@@ -600,6 +858,8 @@ def print_manager_menu():
     print("10 - pretrazi filmove po vise kriterijuma")
     print("11 - pretrazi termine bioskopskih projekcija")
     print("12 - generisi termine za bioskopske projekcije u naredne 2 nedelje")
+    print("13 - unos, izmena i brisanje filmova")
+    print("14 - unos, izmena i brisanje bioskopskih projekcija")
     print("X - izlaz iz programa")
 
 
@@ -613,7 +873,6 @@ def print_seller_menu():
     print("6 - prodaj rezervisanu kartu")
     print("7 - izmeni kartu")
     print("8 - ponisti rezervaciju 30 min pre pocetka projekcije")
-    #todo p2
     print("9 - izloguj se")
     print("10 - izmeni licne podatke")
     print("11 - pregledaj dostupne filmove")
@@ -641,13 +900,13 @@ def handle_manager_command(command):
     if command == '1':
         add_seller()
     elif command == '2':
-        print("TODO")
+        get_reports()
     elif command == '3':
-        print("TODO")
+        check_loyalty_card_discount()
     elif command == '4':
-        print("TODO")
+        print_seats_as_matrix()
     elif command == '5':
-        print("TODO")
+        change_ticket_price()
     elif command == '6':
         logout()
     elif command == '7':
@@ -662,6 +921,10 @@ def handle_manager_command(command):
         search_screening_terms()
     elif command == '12':
         generate_screening_terms()
+    elif command == '13':
+        handle_movies_as_manager()
+    elif command == '14':
+        handle_screening_terms_as_manager()
 
 
 def handle_seller_command(command):
@@ -678,9 +941,9 @@ def handle_seller_command(command):
     elif command == '6':
         sell_reserved_tickets()
     elif command == '7':
-        print("TODO")
+        modify_ticket()
     elif command == '8':
-        print("TODO")
+        cancel_reservations_30_min_before_start()
     elif command == '9':
         logout()
     elif command == '10':
@@ -730,8 +993,6 @@ def handle_logged_in_user():
         handle_buyer_command(command)
     return command
 
+
 if __name__ == '__main__':
-    # date = datetime.date.today()
-    # print(date)
-    # print(date.strftime('%d.%m.%Y'))
     main()

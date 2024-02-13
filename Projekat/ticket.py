@@ -158,15 +158,10 @@ def cancel_ticket(screening_term_code, seat):
             break
     if ticket_to_cancel != {}:
         tickets.remove(ticket_to_cancel)
+        save_tickets()
         return True
     else:
         return False
-
-def seat_belongs_to_user(seat, username):
-    for reserved_ticket in get_reserved_tickets_by_username(username):
-        if reserved_ticket['seat'] == seat:
-            return True
-    return False
 
 
 def get_ticket_by_screening_term_code(screening_term_code):
@@ -209,6 +204,17 @@ def get_surname_from_ticket(ticket):
     else:
         surname = user['surname']
     return surname
+
+
+def set_name_and_surname_of_ticket(ticket, username, new_name, new_surname):
+    user = users.get_user_by_username(username)
+    if user is None:
+        ticket['username'] = f"{new_name} {new_surname}"
+    else:
+        ticket['username'] = username
+        user['name'] = new_name
+        user['surname'] = new_surname
+        users.save_users()
 
 
 def get_tickets_by_criteria(criteria, search_term):
@@ -273,23 +279,57 @@ def sell_reserved_ticket(screening_term_code, seat):
             break
 
 
-# ticket1 = {
-#             'username': "username",
-#             'screening_term_code': "screening_term_code",
-#             'seat': "seat",
-#             'sale_date': "sale_date",
-#             'reserved': "reserved"
-#         }
-# ticket2 = {
-#             'username': "username",
-#             'screening_term_code': "screening_term_code",
-#             'seat': "seat",
-#             'sale_date': "sale_date",
-#             'reserved': "reserved"
-#         }
-# tickets = [ticket1, ticket2]
+def find_ticket_by(screening_term_code, name, surname, seat):
+    for ticket in tickets:
+        user_name = get_name_from_ticket(ticket)
+        user_surname = get_surname_from_ticket(ticket)
+        if (ticket['screening_term_code'] == screening_term_code
+                and ticket['seat'] == seat
+                and user_name == name
+                and user_surname == surname):
+            return ticket
+    return {}
+
+
+def remove_ticket(ticket_to_modify):
+    tickets.remove(ticket_to_modify)
+
+
+def modify_ticket(reserved, date, username, new_code, new_name, new_surname, new_seat):
+    modified_ticket = {
+        'reserved': reserved,
+        'date': date,
+        'screening_term_code': new_code,
+        'seat': new_seat
+    }
+    set_name_and_surname_of_ticket(modified_ticket, username, new_name, new_surname)
+    tickets.append(modified_ticket)
+    save_tickets()
+
+
+def get_sold_tickets_by_sale_date(sale_date):
+    return [ticket for ticket in tickets
+            if ticket['date'] == sale_date
+            and ticket['reserved'] == 'sold']
+
+
+def get_sold_tickets_by_screening_term_date(screening_term_date):
+    results = []
+    for ticket in tickets:
+        if ticket['reserved'] == 'sold':
+            screening_term_code = ticket['screening_term_code']
+            term = screening_term_module.get_screening_term_by_code(screening_term_code)
+            if term['date'] == screening_term_date:
+                results.append(ticket)
+    return results
+
+
+def add_tickets(new_tickets):
+    tickets.extend(new_tickets)
+    save_tickets()
+
+
 tickets = []
 load_tickets()
-# save_tickets()
 print(format_header())
 print(format_all_users())
